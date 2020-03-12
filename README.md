@@ -5,6 +5,7 @@ This project is develope a generalized reweighting code for TASS and its varient
 
           Anji Babu Kapakayala
           Rahul Verma
+	  Shubhandra Tripathi
 
 
 
