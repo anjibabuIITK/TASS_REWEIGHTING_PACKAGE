@@ -18,7 +18,8 @@ case "$1" in
 	git add *
 	git status;;
   "commit")
-	git commit -m $2
+      read -p "Write your message:", msg
+	git commit -m "$msg"
 	git status;;
   "*")
 	echo "Give appropriate git command";;
