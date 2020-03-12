@@ -4,6 +4,8 @@
 # 
 # Authour: Anji Babu Kapakayala
 #
+# USAGE: chmod 777 GIT
+#        ./GIT KEYWORD
 #
 #!/bin/bash
 case "$1" in
@@ -18,10 +20,13 @@ case "$1" in
 	git add *
 	git status;;
   "commit")
-      read -p "Write your message:", msg
+      read -p "Write your message:" msg
 	git commit -m "$msg"
+	git status;;
+  "clone")
+      read -p "Write your message:" link
+        git clone "$link"
 	git status;;
   "*")
 	echo "Give appropriate git command";;
 esac
-
