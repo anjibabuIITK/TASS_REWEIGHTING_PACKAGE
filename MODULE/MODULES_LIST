@@ -1,3 +1,11 @@
 MAIN: TASS_REWIGHTING.f90
 MODULES:
 1. Prepare_Inputs.f90
+   Subroutines:
+   1.1 
+2. GetSteps.f90
+
+3. Reweight_METAD.f90
+
+4. Calculate_Prob.f90
+
