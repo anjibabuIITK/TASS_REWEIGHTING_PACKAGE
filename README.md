@@ -1,5 +1,8 @@
 # TASS_REWEIGHTING_PACKAGE
-This project is develope a generalized reweighting code for TASS and its varients.
+
+*   Project Description:
+
+This project is develope a generalized reweighting code for TASS and its varients using MODULE based FORTRAN90. 
 
 *   Active Present Contributors:
 
@@ -18,3 +21,4 @@ This project is develope a generalized reweighting code for TASS and its varient
 	   	git pull origin master
 
 Cheers!
+Anji 
