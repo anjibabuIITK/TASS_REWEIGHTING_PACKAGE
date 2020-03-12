@@ -2,7 +2,8 @@
 
 *   Project Description:
 
-This project is develope a generalized reweighting code for TASS and its varients using MODULE based FORTRAN90. 
+	    This project is develope a generalized reweighting code for TASS and its varients 
+	    using MODULE based FORTRAN90. 
 
 *   Active Present Contributors:
 
@@ -20,5 +21,6 @@ This project is develope a generalized reweighting code for TASS and its varient
 	   	git push origin master
 	   	git pull origin master
 
-Cheers!
-Anji 
+
+		Cheers!
+		Anji 
