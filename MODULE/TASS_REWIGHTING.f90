@@ -10,6 +10,7 @@ PROGRAM TASS
 USE Prepare_Inputs
 USE GetSteps
 USE ReadFiles
+USE REWEIGHT
 !USE Reweight_METAD
 !USE PROBABILITY
 IMPLICIT NONE
@@ -60,6 +61,11 @@ Print*,"Periodicity =",periodic,"  ","PERIODIC_CV =","  ",periodic_CV
 !WRITE(*,*)
 !gridwidth1=GridWidth(gridmin1,gridmax1,nbin)
 !WRITE(*,'(A,F10.2)')" GRID WIDTH 1  : ",gridwidth1
+!a=-3.20d0
+!a=Apply_Piriodicity(a)
+!write(*,*)"A= ",a
+
+
 ENDPROGRAM TASS
 !---------------------!
 ! 
