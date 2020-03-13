@@ -9,10 +9,13 @@
 PROGRAM TASS
 USE Prepare_Inputs
 USE GetSteps
+USE ReadFiles
+!USE Reweight_METAD
+!USE PROBABILITY
 IMPLICIT NONE
-
 CALL Welcome_Message()
-CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max,nmetad)
+CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max,nmetad&
+&,periodic_CV)
 
 ! Check inputfiles 
 CALL Is_File_Exist('input.inp ')
@@ -23,11 +26,11 @@ CALL Read_Plumed_Input()
 
 CALL Get_Inputs(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor&
 &,periodic,gridmin1,gridmin2,gridmax1,gridmax2,gridmin3,gridmax3,gridmin4,gridmax4,gridwidth1,gridwidth2&
-&,gridwidth3,gridwidth4,t_min,t_max,nbin)
+&,gridwidth3,gridwidth4,t_min,t_max,nbin,mdsteps,ncolumn,cv,periodic_CV)
 
 CALL Print_Data(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor,periodic,&
 &gridmin1,gridmin2,gridmax1,gridwidth1,gridmax2,gridmin3,gridmax3,gridmin4,gridmax4,gridwidth2,gridwidth3,gridwidth4&
-&,t_min,t_max,nbin)
+&,t_min,t_max,nbin,mdsteps,ncolumn,periodic_CV)
 
 
 if(metad) then
@@ -36,17 +39,21 @@ if(metad) then
 !CALL Calculate_Prob()
 PRINT*,"METAD is ON"
 endif
+
+!DO i=1,mdsteps
+!WRITE(*,*)cv(i,2:)
+!ENDDO
 !CALL Calculate_Prob()
+Print*,"Periodicity =",periodic,"  ","PERIODIC_CV =","  ",periodic_CV
+!open(10,file=cvfile,status='old')
 
-open(10,file=cvfile,status='old')
+!ALL GetColumns(10,ncolumn)
+!ALL get_steps(10,mdsteps)
 
-CALL GetColumns(10,ncolumn)
-CALL get_steps(10,mdsteps)
+!RINT*," No. Of Columns: ",ncolumn
+!RINT*," No. Of Steps  : ",mdsteps
 
-PRINT*," No. Of Columns: ",ncolumn
-PRINT*," No. Of Steps  : ",mdsteps
-
-close(10)
+!close(10)
 
 !CALL Get_gridwidth(gridmin1,gridmax1,nbin,gridwidth1)
 !WRITE(*,'(A,F10.2)')" GRID WIDTH 1  : ",gridwidth1
