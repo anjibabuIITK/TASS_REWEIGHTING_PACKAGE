@@ -1,0 +1,17 @@
+Please write down the tasks completed or yet to complete
+
+Completed:
+Written module for reading plumed input and user defined input files.
+Writtem module for counting no. od steps and no. of columns for a given file.
+
+
+
+Yet to Do:
+Module for reweighting MTD for 1D, 2D, 3D
+Module for calculating probability (1D, 2D, 3D, 4D)
+Module for running WHAM (2cv, 3CV, 4CV)
+
+
+Cheers!
+
+
