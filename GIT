@@ -10,22 +10,26 @@
 #!/bin/bash
 case "$1" in
 
-  "pull")
+  "pull"|"pl")
 	git pull origin master;;
-  "push")
+  "push"|"ps")
 	git push origin master;;
-  "status")
+  "status"|"S")
 	git status ;;
-  "add")
+  "add"|"A")
 	git add *
 	git status;;
-  "commit")
+  "commit"|"c")
       read -p "Write your message:" msg
 	git commit -m "$msg"
 	git status;;
   "clone")
       read -p "Write your message:" link
         git clone "$link"
+	git status;;
+  "rm")
+      read -p "Enter Filename Carefully:" File
+	git rm $File
 	git status;;
   "*")
 	echo "Give appropriate git command";;
