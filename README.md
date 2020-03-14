@@ -2,7 +2,7 @@
 
 *   Project Description:
 
-	    This project is develope a generalized reweighting code for TASS and its varients 
+	    This project is to develope a generalized reweighting code for TASS and its varients 
 	    using MODULE based FORTRAN90. 
 
 *   Active Present Contributors:
