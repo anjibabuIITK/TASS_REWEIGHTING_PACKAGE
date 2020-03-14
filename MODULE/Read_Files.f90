@@ -1,118 +1,95 @@
 MODULE ReadFiles
+USE GetSteps
 CONTAINS
 
 !-----------------------------------!
-SUBROUTINE ReadCVFile(iunit,cv,mdsteps,ncol,periodic_CV)
+SUBROUTINE ReadCVFile(cvfile,cv,mdsteps,ncol,periodic_CV)
 IMPLICIT NONE
-INTEGER,INTENT(IN)::iunit,mdsteps,ncol
-REAL*8, INTENT(OUT)::cv(mdsteps,ncol)
-CHARACTER(len=20),INTENT(IN)::periodic_CV
+INTEGER,INTENT(INOUT)::mdsteps,ncol
+REAL*8, INTENT(OUT), ALLOCATABLE::cv(:,:)
+CHARACTER(len=20),INTENT(IN)::periodic_CV,cvfile
 INTEGER::i,j
-REAL*8::cv1,cv2,cv3,cv4
-REWIND(iunit)
+
+CALL SYSTEM("cp COLVAR COLVAR.old")
+CALL SYSTEM('sed -i "/^#/d" COLVAR')
+
+open(unit=11,file=cvfile,status='old')
+mdsteps=NSteps(11)
+ncol=Get_Columns(11)
+ALLOCATE(cv(mdsteps,ncol))
+
 DO i=1,mdsteps
-  READ(iunit,*)cv(i,1:)
+  READ(11,*)cv(i,1:)
 
-!cv1=cv(i,2)
-!cv2=cv(i,3)
-!cv3=cv(i,4)
-!cv4=cv(i,5)
-
+!-------------------------!
+! Applying Periodicity
 SELECT CASE (periodic_CV)
 
 CASE ("NONE")
      Print*,"No Periodic applied"
 CASE ("ALL")
-     IF( cv(i,2) .gt.  3.14d0)  cv(i,2) = cv(i,2) - 6.28d0
-     IF( cv(i,2) .lt. -3.14d0 ) cv(i,2) = cv(i,2) + 6.28d0
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
-     IF( cv(i,5) .gt.  3.14d0)  cv(i,5) = cv(i,5) - 6.28d0
-     IF( cv(i,5) .lt. -3.14d0 ) cv(i,5) = cv(i,5) + 6.28d0
-
-!cv(i,2)=Apply_Piriodicity(cv1)
-!cv(i,3)=Apply_Piriodicity(cv2)
-!cv(i,4)=Apply_Piriodicity(cv3)
-!cv(i,5)=Apply_Piriodicity(cv4)
+    cv(i,2)=Apply_Piriodicity(cv(i,2))
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
+if(ncol > 3) then
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
+    cv(i,5)=Apply_Piriodicity(cv(i,5))
+endif
 !     Print*, "All the CVs are periodic"
 CASE ("CV1")
  !    Print*, "CV1 is periodic"
-     IF( cv(i,2) .gt.  3.14d0)  cv(i,2) = cv(i,2) - 6.28d0
-     IF( cv(i,2) .lt. -3.14d0 ) cv(i,2) = cv(i,2) + 6.28d0
+    cv(i,2)=Apply_Piriodicity(cv(i,2))
 CASE ("CV2")
  !    Print*, "CV2 is periodic"
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
 CASE ("CV3")
  !    Print*, "CV3 is periodic"
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
 CASE ("CV4")
  !    Print*, "CV4 is periodic"
-     IF( cv(i,5) .gt.  3.14d0)  cv(i,5) = cv(i,5) - 6.28d0
-     IF( cv(i,5) .lt. -3.14d0 ) cv(i,5) = cv(i,5) + 6.28d0
+    cv(i,5)=Apply_Piriodicity(cv(i,5))
 CASE ("CV1.and.CV2")
  !    Print*, "CV1 and CV2 are periodic"
-     IF( cv(i,2) .gt.  3.14d0)  cv(i,2) = cv(i,2) - 6.28d0
-     IF( cv(i,2) .lt. -3.14d0 ) cv(i,2) = cv(i,2) + 6.28d0
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
+    cv(i,2)=Apply_Piriodicity(cv(i,2))
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
 CASE ("CV2.and.CV3")
  !    Print*, "CV2 and CV3 are periodic"
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
 CASE ("CV3.and.CV4")
  !    Print*, "CV3 and CV4 are periodic"
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
-     IF( cv(i,5) .gt.  3.14d0)  cv(i,5) = cv(i,5) - 6.28d0
-     IF( cv(i,5) .lt. -3.14d0 ) cv(i,5) = cv(i,5) + 6.28d0
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
+    cv(i,5)=Apply_Piriodicity(cv(i,5))
 CASE ("CV1.and.CV4")
  !    Print*, "CV1 and CV4 are periodic"
-     IF( cv(i,2) .gt.  3.14d0)  cv(i,2) = cv(i,2) - 6.28d0
-     IF( cv(i,2) .lt. -3.14d0 ) cv(i,2) = cv(i,2) + 6.28d0
-     IF( cv(i,5) .gt.  3.14d0)  cv(i,5) = cv(i,5) - 6.28d0
-     IF( cv(i,5) .lt. -3.14d0 ) cv(i,5) = cv(i,5) + 6.28d0
+    cv(i,2)=Apply_Piriodicity(cv(i,2))
+    cv(i,5)=Apply_Piriodicity(cv(i,5))
 CASE ("CV2.and.CV4")
  !    Print*, "CV2 and CV4 are periodic"
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
-     IF( cv(i,5) .gt.  3.14d0)  cv(i,5) = cv(i,5) - 6.28d0
-     IF( cv(i,5) .lt. -3.14d0 ) cv(i,5) = cv(i,5) + 6.28d0
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
+    cv(i,5)=Apply_Piriodicity(cv(i,5))
 CASE ("CV1.and.CV3")
  !    Print*, "CV1 and CV3 are periodic"
-     IF( cv(i,2) .gt.  3.14d0)  cv(i,2) = cv(i,2) - 6.28d0
-     IF( cv(i,2) .lt. -3.14d0 ) cv(i,2) = cv(i,2) + 6.28d0
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
+    cv(i,2)=Apply_Piriodicity(cv(i,2))
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
 CASE ("CV1.and.CV2.and.CV3")
  !    Print*, "CV1 ,CV2 and CV3 are periodic"
-     IF( cv(i,2) .gt.  3.14d0)  cv(i,2) = cv(i,2) - 6.28d0
-     IF( cv(i,2) .lt. -3.14d0 ) cv(i,2) = cv(i,2) + 6.28d0
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
+    cv(i,2)=Apply_Piriodicity(cv(i,2))
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
 CASE ("CV2.and.CV3.and.CV4")
  !    Print*, "CV2 ,CV3 and CV4 are periodic"
-     IF( cv(i,3) .gt.  3.14d0)  cv(i,3) = cv(i,3) - 6.28d0
-     IF( cv(i,3) .lt. -3.14d0 ) cv(i,3) = cv(i,3) + 6.28d0
-     IF( cv(i,4) .gt.  3.14d0)  cv(i,4) = cv(i,4) - 6.28d0
-     IF( cv(i,4) .lt. -3.14d0 ) cv(i,4) = cv(i,4) + 6.28d0
-     IF( cv(i,5) .gt.  3.14d0)  cv(i,5) = cv(i,5) - 6.28d0
-     IF( cv(i,5) .lt. -3.14d0 ) cv(i,5) = cv(i,5) + 6.28d0
+    cv(i,3)=Apply_Piriodicity(cv(i,3))
+    cv(i,4)=Apply_Piriodicity(cv(i,4))
+    cv(i,5)=Apply_Piriodicity(cv(i,5))
 
 CASE DEFAULT
      PRINT*,"CV > 4 is not implimented"
 END SELECT
+!-------------------------!
 
 
 ENDDO
-REWIND(iunit)
+CLOSE(11)
 END SUBROUTINE ReadCVFile
 !-----------------------------------!
 REAL FUNCTION Apply_Piriodicity(AnyValue)
@@ -125,7 +102,39 @@ REAL*8:: AnyValue
 Apply_Piriodicity=AnyValue
 
 END FUNCTION Apply_Piriodicity
-
 !
 !-----------------------------------!
+SUBROUTINE ReadHills(hillsfile,hill,width,hight,mtd_steps,periodic)
+IMPLICIT NONE
+INTEGER,INTENT(INOUT)::mtd_steps
+REAL*8, INTENT(OUT), ALLOCATABLE::hill(:),width(:),hight(:)
+CHARACTER(len=20),INTENT(IN)::hillsfile
+LOGICAL, INTENT(IN)::periodic
+INTEGER::i,j,i_mtd
+REAL*8::time
+REAL*8, PARAMETER :: kj_to_kcal = 0.239006
+
+
+CALL SYSTEM('cp HILLS HILLS.old')
+CALL SYSTEM('sed -i "/^#/d" HILLS')
+
+open(unit=12,file=hillsfile,status='old')
+mtd_steps=NSteps(12)
+ALLOCATE(hill(mtd_steps),width(mtd_steps),hight(mtd_steps))
+
+DO i_mtd=1,mtd_steps
+  READ(12,*)time,hill(i_mtd),width(i_mtd),hight(i_mtd)
+  if(periodic)  hill(i_mtd)=Apply_Piriodicity(hill(i_mtd))
+  hight(i_mtd)=hight(i_mtd)*kj_to_kcal
+
+ENDDO
+
+CLOSE(12)
+END SUBROUTINE ReadHills
+!-----------------------------------!
+! SUBROUTINE DE_ALLOCATE(hill,width,hight,cv)
+!REAL*8,INTENT(IN)::hill,width,hight,cv
+
+!-----------------------------------!
+
 END MODULE ReadFiles

@@ -11,8 +11,7 @@ USE Prepare_Inputs
 USE GetSteps
 USE ReadFiles
 USE REWEIGHT
-!USE Reweight_METAD
-!USE PROBABILITY
+USE HISTOGRAM
 IMPLICIT NONE
 CALL Welcome_Message()
 CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max,nmetad&
@@ -41,9 +40,9 @@ if(metad) then
 PRINT*,"METAD is ON"
 endif
 
-!DO i=1,mdsteps
-!WRITE(*,*)cv(i,2:)
-!ENDDO
+DO i=1,mdsteps
+WRITE(*,*)cv(i,2:)
+ENDDO
 !CALL Calculate_Prob()
 Print*,"Periodicity =",periodic,"  ","PERIODIC_CV =","  ",periodic_CV
 !open(10,file=cvfile,status='old')

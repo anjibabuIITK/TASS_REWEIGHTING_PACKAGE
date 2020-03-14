@@ -185,17 +185,13 @@ gridwidth2=GridWidth(gridmin2,gridmax2,nbin)
 gridwidth3=GridWidth(gridmin3,gridmax3,nbin)
 gridwidth4=GridWidth(gridmin4,gridmax4,nbin)
 !---------------------------------!
-! To get MD STEPS
-open(unit=11,file=cvfile,status='old')
-mdsteps=NSteps(11)
-ncolumn=Get_Columns(11)
-ALLOCATE(cv(mdsteps,ncolumn))
-call ReadCVFile(11,cv,mdsteps,ncolumn,periodic_CV)
-close(11)
+! Get CV values, mdsteps, ncolumn
+call ReadCVFile(cvfile,cv,mdsteps,ncolumn,periodic_CV)
 !---------------------------------!
 ! Conditions
 IF(t_max.gt.mdsteps)STOP '!!ERROR: t_max > total MD steps'
 !mdsteps=t_max
+!---------------------------------!
 
 
 

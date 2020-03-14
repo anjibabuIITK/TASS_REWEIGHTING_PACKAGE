@@ -117,17 +117,6 @@ GridWidth = griddiff
 
 END FUNCTION GridWidth
 !-----------------------------------!
-!REAL FUNCTION Apply_Piriodicity(AnyValue)
-!IMPLICIT NONE
-!REAL*8:: AnyValue
-!
-!   if (AnyValue .gt. 3.14d0 ) AnyValue=AnyValue - 6.28d0
-!   if (AnyValue .lt.-3.14d0 ) AnyValue=AnyValue + 6.28d0
-!
-!Apply_Piriodicity=AnyValue
-!
-!END FUNCTION Apply_Piriodicity
-
 !
 !-----------------------------------!
 
