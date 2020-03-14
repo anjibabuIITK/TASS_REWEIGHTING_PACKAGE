@@ -14,12 +14,12 @@ case "$1" in
 	git pull origin master;;
   "push"|"ps")
 	git push origin master;;
-  "status"|"S")
+  "status"|"S"|"s")
 	git status ;;
-  "add"|"A")
+  "add"|"A"|"a")
 	git add *
 	git status;;
-  "commit"|"c")
+  "commit"|"c"|"C")
       read -p "Write your message:" msg
 	git commit -m "$msg"
 	git status;;
