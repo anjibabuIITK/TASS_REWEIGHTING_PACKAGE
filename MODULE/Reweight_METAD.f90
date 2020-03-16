@@ -50,9 +50,9 @@ SUBROUTINE Calculate_Ct_factor(hill,width,height,mtd_steps,which_CV&
 IMPLICIT NONE
 REAL*8, INTENT(IN) ::  gridmin2, gridmax2, gridwidth2,cv_temp,sys_temp,biasfactor
 REAL*8, INTENT(IN) :: height(mtd_steps), hill(mtd_steps), width(mtd_steps)
-REAL*8, INTENT(OUT):: ct(mtd_steps)
 INTEGER,INTENT(IN) :: mtd_steps,which_CV,nbin
 LOGICAL, INTENT(IN):: periodic
+REAL*8, INTENT(OUT), ALLOCATABLE:: ct(:)
 
 !local variables
 REAL*8 :: kbT,kTb
@@ -65,14 +65,7 @@ INTEGER :: i_s1, i_s2, i_s3, i_s4, nbin1, nbin2, nbin3, nbin4
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 
-
-!ead(1,*) T0, T, bias_fact
-!ead(1,*) t_min, t_max
-
-!F(t_max.gt.md_steps)STOP '!!ERROR: t_max > total MD steps'
-
-!deltaT = (bias_fact - 1.d0)*T
-!alpha  = (T + deltaT)/deltaT
+ALLOCATE(ct(mtd_steps))
 
  kbT = kb*cv_temp
  kTb = kbT*biasfactor
@@ -83,7 +76,6 @@ WRITE(*,*) 'calculating  c(t)'
     grid(i_s2)=gridmin2+dfloat(i_s2-1)*gridwidth2
  END DO
 
-WRITE(*,*) 'TEST1 passed'
         fes1=0.d0
       DO i_mtd=1,mtd_steps
         ds2=width(i_mtd)*width(i_mtd)
@@ -112,10 +104,8 @@ WRITE(*,*) 'TEST1 passed'
            den=den+DEXP(-fes1(i_s2)/kTb)
         END DO
 
-WRITE(*,*) 'TEST2 passed'
-        ct(i_mtd)=kbT*DLOG(num/den)
+    ct(i_mtd)=kbT*DLOG(num/den)
       END DO
-WRITE(*,*) 'TEST3 passed'
 
 END SUBROUTINE Calculate_Ct_factor
 
