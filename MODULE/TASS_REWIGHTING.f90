@@ -67,12 +67,13 @@ CALL ReadHills(hillfile,hill,width,height,mtdsteps,periodic)
 !WRITE(*,*) hill(i), height(i), width(i)
 !ENDDO
 !
-CALL Calculate_VBias(cv,hill,width,height,hill_freq,cv_freq,mdsteps,ncolumn,mtdsteps,mtd_on_whichCV&
-&,vbias,cv_temp,sys_temp,biasfactor)
-DO i=1,mdsteps
-WRITE(*,*)vbias(i)
-ENDDO
-
+!CALL Calculate_VBias(cv,hill,width,height,hill_freq,cv_freq,mdsteps,ncolumn,mtdsteps,mtd_on_whichCV&
+!&,vbias,cv_temp,sys_temp,biasfactor)
+!DO i=1,mdsteps
+!WRITE(*,*)vbias(i)
+!ENDDO
+CALL Calculate_Ct_factor(hill,width,height,mtdsteps,mtd_on_whichCV&
+&,ct,cv_temp,sys_temp,biasfactor,gridmin2,gridmax2,gridwidth2,nbin,periodic)
 endif
 
 ENDPROGRAM TASS

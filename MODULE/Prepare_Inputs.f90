@@ -12,7 +12,7 @@ INTEGER::ncv, uscv, mtdcv,hill_freq,cv_freq,nbin,nmetad,mtd_on_whichCV
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
 REAL*8, PARAMETER :: au_to_kcal = 627.51
 REAL*8, PARAMETER :: kj_to_kcal = 0.239306
-REAL*8, ALLOCATABLE::cv(:,:),hill(:),height(:),width(:),vbias(:)
+REAL*8, ALLOCATABLE::cv(:,:),hill(:),height(:),width(:),vbias(:),ct(:)
 
 
 !--------------------------------------------!
