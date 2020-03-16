@@ -110,23 +110,50 @@ WRITE(*,*) 'calculating  c(t)'
 END SUBROUTINE Calculate_Ct_factor
 
 !-------------------------------------------------------------!
-!SUBROUTINE Calculate_RCT(rct, )
-! This subroutine is to calculate rct array.
+SUBROUTINE Calculate_RBias(rbias,hill,width,height,cv,w_hill,w_cv,mdsteps,ncol,mtd_steps,which_CV&
+&,cv_temp,sys_temp,biasfactor,gridmin2,gridmax2,gridwidth2,nbin,periodic)
+
+IMPLICIT NONE
+INTEGER,INTENT(IN) :: mtd_steps, mdsteps, w_cv, w_hill, ncol, which_CV, nbin
+REAL*8, INTENT(IN) :: cv(mdsteps,ncol), hill(mtd_steps), height(mtd_steps), width(mtd_steps)
+REAL*8, INTENT(IN) :: cv_temp, sys_temp,biasfactor
+REAL*8, INTENT(IN) ::  gridmin2, gridmax2, gridwidth2
+LOGICAL, INTENT(IN):: periodic
+
+!Local Variables
+INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col
+REAL*8, ALLOCATABLE:: vbias(:),ct(:)
+
+!local variables
+REAL*8 :: kbT,kTb
+REAL*8 :: diff_s2, ds2, ss, hh, dum, num, den
+
+REAL*8, ALLOCATABLE, INTENT(OUT)::rbias(:)
+ALLOCATE(vbias(mdsteps),ct(mtd_steps),rbias(mdsteps))
 
 ! Call Calculate_vbias()
+CALL Calculate_VBias(cv,hill,width,height,w_hill,w_cv,mdsteps,ncol,mtd_steps,which_CV &
+     & ,vbias,cv_temp,sys_temp,biasfactor)
+
 ! Call Calculate_ct()
+CALL Calculate_Ct_factor(hill,width,height,mtd_steps,which_CV&
+&,ct,cv_temp,sys_temp,biasfactor,gridmin2,gridmax2,gridwidth2,nbin,periodic)
+
+DO i_md=1,mdsteps
+   
+i_mtd=(i_md*w_cv/w_hill)
+
+      IF(i_mtd == 0) THEN
+        rbias(i_md)=0.d0
+      ELSE
+        rbias(i_md)=vbias(i_md) - ct(i_mtd)
+      ENDIF
+
+
+ENDDO
 
 ! Calculate RCT factor and pass it main code
-
-
-!END SUBROUTINE Calculate_RCT
-
-
-
-
-
-
-
+END SUBROUTINE Calculate_RBias
 
 
 
