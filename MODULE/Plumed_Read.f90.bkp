@@ -8,10 +8,17 @@ LOGICAL::fexist
 !Remove previous;y existed admin_input.inp file
 inquire (file="admin_input.inp",exist=fexist)
        if(fexist) then
+<<<<<<< HEAD
 !         write(*,*) " The file admin_input.inp has exists!"
        CALL SYSTEM("rm admin_input.inp")
        end if
 
+=======
+         write(*,*) " The file admin_input.inp has exists!"
+      CALL SYSTEM("rm admin_input.inp")
+       end if
+!
+>>>>>>> 492d0842437cb882682b277866e7cc5dd3523499
 OPEN(unit=100,file='ReadPlumedInput.sh',status='unknown')
 WRITE(100,*)'# --------------------------------------------------# '
 WRITE(100,*)"# This script is a part of TASS reweighting codes"
@@ -24,7 +31,12 @@ WRITE(100,*)'#'
 WRITE(100,*)'# --------------------------------------------------# '
 WRITE(100,*)'#'
 WRITE(100,*)'#!/bin/bash'
+<<<<<<< HEAD
 WRITE(100,*)'sed -i "/^#/d" plumed.dat'
+=======
+WRITE(100,*)'cp plumed.dat dummy.dat'
+WRITE(100,*)'sed -i "/^#/d" dummy.dat'
+>>>>>>> 492d0842437cb882682b277866e7cc5dd3523499
 WRITE(100,*)"awk -F",'" "', " '{"
 WRITE(100,*)'       for(i=1;i<=NF;i++) {'
 WRITE(100,*)'{ split($i, a, "=")'
@@ -43,7 +55,12 @@ WRITE(100,*)'}'
 WRITE(100,*)
 WRITE(100,*)'}'
 WRITE(100,*)'  }'
+<<<<<<< HEAD
 WRITE(100,*)"}' plumed.dat"
+=======
+WRITE(100,*)"}' dummy.dat"
+WRITE(100,*)"rm dummy.dat"
+>>>>>>> 492d0842437cb882682b277866e7cc5dd3523499
 WRITE(100,*)'# --------------------------------------------------# '
 
 CLOSE(100)
