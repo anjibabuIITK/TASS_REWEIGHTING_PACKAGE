@@ -1,6 +1,6 @@
 #!/bin/bash
-gfortran -c Histogram.f90 Read_Files.f90 GetSteps.f90 Prepare_Inputs.f90 Reweight_METAD.f90 TASS_REWIGHTING.f90
-gfortran Histogram.o Read_Files.o GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o Reweight_METAD.o -o reweight_tass.exe
+gfortran -c GetSteps.f90 Prepare_Inputs.f90 TASS_REWIGHTING.f90
+gfortran GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o -o reweight_tass.exe
 
 case $1 in
     "clean") 

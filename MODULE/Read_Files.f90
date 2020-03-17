@@ -83,7 +83,7 @@ CASE ("CV2.and.CV3.and.CV4")
     cv(i,5)=Apply_Piriodicity(cv(i,5))
 
 CASE DEFAULT
-     PRINT*,"CV > 4 is not implimented"
+!     PRINT*,"CV > 4 is not implimented"
 END SELECT
 !-------------------------!
 
@@ -104,11 +104,11 @@ Apply_Piriodicity=AnyValue
 END FUNCTION Apply_Piriodicity
 !
 !-----------------------------------!
-SUBROUTINE ReadHills(hillsfile,hill,width,hight,mtd_steps,periodic)
+SUBROUTINE ReadHills(hillfile,hill,width,height,mtd_steps,periodic)
 IMPLICIT NONE
 INTEGER,INTENT(INOUT)::mtd_steps
-REAL*8, INTENT(OUT), ALLOCATABLE::hill(:),width(:),hight(:)
-CHARACTER(len=20),INTENT(IN)::hillsfile
+REAL*8, INTENT(OUT), ALLOCATABLE::hill(:),width(:),height(:)
+CHARACTER(len=20),INTENT(IN)::hillfile
 LOGICAL, INTENT(IN)::periodic
 INTEGER::i,j,i_mtd
 REAL*8::time
@@ -118,23 +118,18 @@ REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 CALL SYSTEM('cp HILLS HILLS.old')
 CALL SYSTEM('sed -i "/^#/d" HILLS')
 
-open(unit=12,file=hillsfile,status='old')
+open(unit=12,file=hillfile,status='old')
 mtd_steps=NSteps(12)
-ALLOCATE(hill(mtd_steps),width(mtd_steps),hight(mtd_steps))
+ALLOCATE(hill(mtd_steps),width(mtd_steps),height(mtd_steps))
 
 DO i_mtd=1,mtd_steps
-  READ(12,*)time,hill(i_mtd),width(i_mtd),hight(i_mtd)
+  READ(12,*)time,hill(i_mtd),width(i_mtd),height(i_mtd)
   if(periodic)  hill(i_mtd)=Apply_Piriodicity(hill(i_mtd))
-  hight(i_mtd)=hight(i_mtd)*kj_to_kcal
+  height(i_mtd)=height(i_mtd)*kj_to_kcal
 
 ENDDO
 
 CLOSE(12)
 END SUBROUTINE ReadHills
 !-----------------------------------!
-! SUBROUTINE DE_ALLOCATE(hill,width,hight,cv)
-!REAL*8,INTENT(IN)::hill,width,hight,cv
-
-!-----------------------------------!
-
 END MODULE ReadFiles

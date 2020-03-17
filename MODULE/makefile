@@ -4,19 +4,37 @@
 #and writting unbiased probabilities			      
 #===============Written by Rahul Verma==========================
 
-.RECIPEPREFIX+=
+#.RECIPEPREFIX+=
 
-reweight_tass.exe : GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o
-    gfortran -o reweight_tass.exe GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o
+reweight_tass.exe : GetSteps.o welcome.o Check_File.o Plumed_Read.o Print_Data.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o TASS_REWIGHTING.o
+	gfortran -o reweight_tass.exe -fcheck=all GetSteps.o welcome.o Check_File.o Print_Data.o Plumed_Read.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o  TASS_REWIGHTING.o
 
 GetSteps.o : GetSteps.f90
-  gfortran -c GetSteps.f90
+	gfortran -c GetSteps.f90
+
+welcome.o : welcome.f90
+	gfortran -c welcome.f90
+
+Check_File.o : Check_File.f90
+	gfortran -c Check_File.f90
+
+Plumed_Read.o : Plumed_Read.f90
+	gfortran -c Plumed_Read.f90
+
+Print_Data.o : Print_Data.f90
+	gfortran -c Print_Data.f90
+
+Read_Files.o : Read_Files.f90
+	gfortran -c Read_Files.f90
 
 Prepare_Inputs.o : Prepare_Inputs.f90
-  gfortran -c Prepare_Inputs.f90
+	gfortran -c Prepare_Inputs.f90
+
+Reweight_METAD.o : Reweight_METAD.f90
+	gfortran -c Reweight_METAD.f90
 
 TASS_REWIGHTING.o : TASS_REWIGHTING.f90
-  gfortran -c TASS_REWIGHTING.f90
+	gfortran -c TASS_REWIGHTING.f90
 
 clean   :
-    rm *.o reweight_tass.exe
+	rm *.o *.mod reweight_tass.exe

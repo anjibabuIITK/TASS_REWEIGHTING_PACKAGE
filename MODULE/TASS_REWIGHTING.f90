@@ -2,21 +2,22 @@
 ! Fortran program to reweight TASS simulation. 
 ! This code is MODULE based program.
 !
-!
-!
-!
-!---------------------------------------------------!
+!======================================================================================================================
 PROGRAM TASS
 USE Prepare_Inputs
+USE welcome
+USE Check_File
+USE Plumed_Read
 USE GetSteps
 USE ReadFiles
-USE REWEIGHT
-USE HISTOGRAM
+USE Reweight_MTD
+USE Print_Data
+!======================================================================================================================
 IMPLICIT NONE
-CALL Welcome_Message()
 
-CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max,nmetad&
-&,periodic_CV,mtd_on_whichCV)
+CALL Welcome_Message()
+!CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max,nmetad)
+
 ! Check inputfiles 
 CALL Is_File_Exist('input.inp ')
 CALL Is_File_Exist('plumed.dat')
@@ -24,64 +25,36 @@ CALL Is_File_Exist('plumed.dat')
 ! Read plumed.dat 
 CALL Read_Plumed_Input()
 
-CALL Get_Inputs(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor&
-&,periodic,gridmin1,gridmin2,gridmax1,gridmax2,gridmin3,gridmax3,gridmin4,gridmax4,gridwidth1,gridwidth2&
-&,gridwidth3,gridwidth4,t_min,t_max,nbin,mdsteps,ncolumn,cv,periodic_CV,mtd_on_whichCV)
+CALL Get_Inputs(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor,periodic, &
+        & nbin,t_min,t_max,grid,mtd_on_whichCV)
 
-CALL Print_Data(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor,periodic,&
-&gridmin1,gridmin2,gridmax1,gridwidth1,gridmax2,gridmin3,gridmax3,gridmin4,gridmax4,gridwidth2,gridwidth3,gridwidth4&
-&,t_min,t_max,nbin,mdsteps,ncolumn,periodic_CV,mtd_on_whichCV)
+CALL data_print (cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor,periodic, &
+        & nbin,t_min,t_max,grid,mtd_on_whichCV)
 
+CALL ReadCVFile(cvfile,cv,mdsteps,ncol,periodic_CV)
 
-!DO i=1,mdsteps
-!WRITE(*,*)cv(i,2:)
-!ENDDO
-!CALL Calculate_Prob()
-Print*,"Periodicity =",periodic,"  ","PERIODIC_CV =","  ",periodic_CV
-!open(10,file=cvfile,status='old')
+PRINT*,cvfile
+open(10,file=cvfile,status='old')
 
-!ALL GetColumns(10,ncolumn)
-!ALL get_steps(10,mdsteps)
+CALL GetColumns(10,ncolumn)
+CALL get_steps(10,mdsteps)
 
-!RINT*," No. Of Columns: ",ncolumn
-!RINT*," No. Of Steps  : ",mdsteps
-
-!close(10)
-
-!CALL Get_gridwidth(gridmin1,gridmax1,nbin,gridwidth1)
-!WRITE(*,'(A,F10.2)')" GRID WIDTH 1  : ",gridwidth1
-!WRITE(*,*)
-!gridwidth1=GridWidth(gridmin1,gridmax1,nbin)
-!WRITE(*,'(A,F10.2)')" GRID WIDTH 1  : ",gridwidth1
-!a=-3.20d0
-!a=Apply_Piriodicity(a)
-!write(*,*)"A= ",a
+PRINT*," No. Of Columns: ",ncolumn
+PRINT*," No. Of Steps  : ",mdsteps
+CLOSE(10)
+!PRINT*,"HERE"
 
 if(metad) then
 !CALL Calculate_Ct_Factor()
 !CALL Calculate_vbias()
 !CALL Calculate_Prob()
 PRINT*,"METAD is ON"
-CALL ReadHills(hillfile,hill,width,height,mtdsteps,periodic)
-!DO i=1,mtdsteps
-!WRITE(*,*) hill(i), height(i), width(i)
-!ENDDO
-!
-!CALL Calculate_VBias(cv,hill,width,height,hill_freq,cv_freq,mdsteps,ncolumn,mtdsteps,mtd_on_whichCV&
-!&,vbias,cv_temp,sys_temp,biasfactor)
 
-!CALL Calculate_Ct_factor(hill,width,height,mtdsteps,mtd_on_whichCV&
-!&,ct,cv_temp,sys_temp,biasfactor,gridmin2,gridmax2,gridwidth2,nbin,periodic)
-
-CALL Calculate_RBias(rbias,hill,width,height,cv,hill_freq,cv_freq,mdsteps,ncolumn,mtdsteps,mtd_on_whichCV&
-&,cv_temp,sys_temp,biasfactor,gridmin2,gridmax2,gridwidth2,nbin,periodic)
+CALL ReadHills(hillfile,hill,width,height,mtd_steps,periodic)
+CALL Calculate_RBias(rbias,hill,width,height,cv,hill_freq,cv_freq,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
+     & cv_temp,sys_temp,biasfactor,grid,nbin,periodic) 
 endif
-
-open(12,file="rbias.dat",status="unknown")
-DO i=1,mtdsteps
-WRITE(12,*)rbias(i)
-ENDDO
-close(12)
+!CALL Calculate_Prob()
 ENDPROGRAM TASS
 !---------------------!
 ! 
