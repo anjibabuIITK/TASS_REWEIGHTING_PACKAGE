@@ -89,24 +89,31 @@ SELECT CASE (KEYWORD)
       READ(text,*) KEYWORD,dummy,t_min
     CASE ('T_MAX')
       READ(text,*) KEYWORD,dummy,t_max
-    CASE ('GRID_INFORMATION')
-      READ(text,*) KEYWORD
-      GOTO 200
+    CASE ('PERIODIC_CV')
+      READ(text,*) KEYWORD,dummy,periodic_CV
     CASE ('PERIODICITY')
       READ(text,*) KEYWORD,dummy,dummy2
       IF(dummy2 == "ON") periodic=.TRUE.
     CASE ('MTD_ON_CV')
       READ(text,*) KEYWORD,dummy,mtd_on_whichCV
+    CASE ('GRID_INFORMATION')
+      READ(text,*) KEYWORD
+      GOTO 200
     CASE DEFAULT
 
 END SELECT
 ENDDO
-
+!---------------------------------!
+! Setting default Periodicity
+IF(periodic .eqv..FALSE.) THEN
+periodic_CV="NONE"
+ENDIF
+!---------------------------------!
 100 FORMAT (A4,I1,2X,A,4F16.2)
 200 CONTINUE
 IF (KEYWORD .eq. 'GRID_INFORMATION') THEN
    DO i = 1,NCV
-     READ(10,*) grid1(i),dummy,grid(1:2,i)!gridmin(i),gridmax(i)
+     READ(10,*) grid1(i),dummy,grid(1:2,i)
       grid(3,i) = (grid(2,i) - grid(1,i))/NBIN
    ENDDO
 !   DO i = 1,NCV

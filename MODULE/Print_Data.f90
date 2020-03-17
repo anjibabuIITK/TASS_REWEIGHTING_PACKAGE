@@ -24,7 +24,7 @@ WRITE(*,700)cvfile
 WRITE(*,800)hillfile
 WRITE(*,900)biasfactor
 DO i = 1,ncv
-WRITE(*,1200)grid(1:3,i)!min(i),gridmax(i),gridw(i)
+WRITE(*,1200)i,'=',grid(1:3,i)
 ENDDO
 WRITE(*,1400)nbin
 WRITE(*,1700)t_min
@@ -42,7 +42,8 @@ WRITE(6,*)"PERIODICITY","     ="," ", periodic
 700 FORMAT("CV FILE     ",5X,"=",2X,a,2X)
 800 FORMAT("HILL FILE   ",5X,"=",2X,a,2X)
 900 FORMAT("BIASFACTOR  ",5X,"=",2X,F8.2,2X)
-1200 FORMAT("GRID1:      ",5X,"=",2X,F8.2,2X,F8.2,2X,F8.2)
+!1200 FORMAT("GRID1:      ",5X,"=",2X,F8.2,2X,F8.2,2X,F8.2)
+1200 FORMAT ("GRID",I1,12X,A,4F10.2)
 1400 FORMAT("NBIN        ",5X,"=",2X,I5,2X)
 1700 FORMAT("T_MIN       ",5X,"=",2X,I5,2X)
 1800 FORMAT("T_MAX       ",5X,"=",2X,I5,2X)

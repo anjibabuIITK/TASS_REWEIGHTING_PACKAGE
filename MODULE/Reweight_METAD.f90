@@ -151,9 +151,8 @@ i_mtd=(i_md*w_cv/w_hill)
         rbias(i_md)=vbias(i_md) - ct(i_mtd)
       ENDIF
 
-
+!PRINT*,rbias(i_md)
 ENDDO
-PRINT*,rbias(100)
 
 ! Calculate RCT factor and pass it main code
 END SUBROUTINE Calculate_RBias

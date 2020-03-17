@@ -93,43 +93,79 @@ echo "#===============Written by Rahul Verma==========================" >> makef
 
 echo >> makefile
 
-echo '.RECIPEPREFIX+=' >> makefile
-echo >> makefile
+#echo '.RECIPEPREFIX+=' >> makefile
+#echo >> makefile
 
-echo 'reweight_tass.exe : GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o' >> makefile
+echo 'reweight_tass.exe : GetSteps.o welcome.o Check_File.o Plumed_Read.o Print_Data.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o TASS_REWIGHTING.o' >> makefile
            if [ "$compiler" = "gnu" ]
            then
-echo '    gfortran -o reweight_tass.exe GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o' >> makefile
+echo '		   	gfortran -o reweight_tass.exe GetSteps.o welcome.o Check_File.o Print_Data.o Plumed_Read.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o  TASS_REWIGHTING.o' >> makefile
 echo >> makefile
-echo 'GetSteps.o : GetSteps.f90' >>  makefile
-echo '  gfortran -c GetSteps.f90' >> makefile
+echo 'GetSteps.o : GetSteps.f90' >> makefile
+echo '	gfortran -c GetSteps.f90' >> makefile
+echo >> makefile
+echo 'welcome.o : welcome.f90' >> makefile
+echo '	gfortran -c welcome.f90' >> makefile
+echo >> makefile
+echo 'Check_File.o : Check_File.f90' >> makefile
+echo '	gfortran -c Check_File.f90' >> makefile
+echo >> makefile
+echo 'Plumed_Read.o : Plumed_Read.f90' >> makefile
+echo '	gfortran -c Plumed_Read.f90' >> makefile
+echo >> makefile
+echo 'Print_Data.o : Print_Data.f90' >> makefile
+echo '	gfortran -c Print_Data.f90' >> makefile
+echo >> makefile
+echo 'Read_Files.o : Read_Files.f90' >> makefile
+echo '	gfortran -c Read_Files.f90' >> makefile
 echo >> makefile
 echo 'Prepare_Inputs.o : Prepare_Inputs.f90' >> makefile
-echo '  gfortran -c Prepare_Inputs.f90' >> makefile
+echo '	gfortran -c Prepare_Inputs.f90' >> makefile
+echo >> makefile
+echo 'Reweight_METAD.o : Reweight_METAD.f90' >> makefile
+echo '	gfortran -c Reweight_METAD.f90' >> makefile
 echo >> makefile
 echo 'TASS_REWIGHTING.o : TASS_REWIGHTING.f90' >> makefile
-echo '  gfortran -c TASS_REWIGHTING.f90' >> makefile
+echo '	gfortran -c TASS_REWIGHTING.f90' >> makefile
 echo >> makefile
 
            elif [ "$compiler" = "intel" ]
            then
-echo '    ifort -o reweight_tass.exe GetSteps.o Prepare_Inputs.o TASS_REWIGHTING.o' >> makefile
+echo '                  ifort -o reweight_tass.exe GetSteps.o welcome.o Check_File.o Print_Data.o Plumed_Read.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o  TASS_REWIGHTING.o' >> makefile
 
 echo >> makefile
-echo 'GetSteps.o : GetSteps.f90' >>  makefile
-echo '	ifort -c GetSteps.f90' >> makefile
+echo 'GetSteps.o : GetSteps.f90' >> makefile
+echo '  ifort -c GetSteps.f90' >> makefile
+echo >> makefile
+echo 'welcome.o : welcome.f90' >> makefile
+echo '  ifort -c welcome.f90' >> makefile
+echo >> makefile
+echo 'Check_File.o : Check_File.f90' >> makefile
+echo '	ifort -c Check_File.f90' >> makefile
+echo >> makefile
+echo 'Plumed_Read.o : Plumed_Read.f90' >> makefile
+echo '	ifort -c Plumed_Read.f90' >> makefile
+echo >> makefile
+echo 'Print_Data.o : Print_Data.f90' >> makefile
+echo '	ifort -c Print_Data.f90' >> makefile
+echo >> makefile
+echo 'Read_Files.o : Read_Files.f90' >> makefile
+echo '	ifort -c Read_Files.f90' >> makefile
 echo >> makefile
 echo 'Prepare_Inputs.o : Prepare_Inputs.f90' >> makefile
-echo '	ifort -c Prepare_Inputs.f90' >> makefile
+echo '  ifort -c Prepare_Inputs.f90' >> makefile
+echo >> makefile
+echo 'Reweight_METAD.o : Reweight_METAD.f90' >> makefile
+echo '	ifort -c Reweight_METAD.f90' >> makefile
 echo >> makefile
 echo 'TASS_REWIGHTING.o : TASS_REWIGHTING.f90' >> makefile
-echo '	ifort -c TASS_REWIGHTING.f90' >> makefile
+echo '  ifort -c TASS_REWIGHTING.f90' >> makefile
 echo >> makefile
 
 	else echo "COPILER NOT FOUND EXITING ..."  && exit
 fi
 echo 'clean   :' >> makefile
-echo '    rm *.o reweight_tass.exe' >> makefile
+echo '        rm *.o *.mod reweight_tass.exe' >> makefile
 
 esac
 echo ""

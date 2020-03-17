@@ -50,11 +50,12 @@ SELECT CASE (KEYWORD)
       IF(dummy2 == "ON") periodic=.TRUE.
     CASE ('NBIN')
       READ(text,*) KEYWORD,dummy,nbin
-    CASE ('GRID_INFORMATION')
-      READ(text,*) KEYWORD
-        GOTO 200
+!    CASE ('GRID_INFORMATION')
+!      READ(text,*) KEYWORD
+!        GOTO 200
     CASE ('T_MIN')
       READ(text,*) KEYWORD,dummy,t_min
+      PRINT*,KEYWORD,dummy,t_min
     CASE ('T_MAX')
       READ(text,*) KEYWORD,dummy,t_max
     CASE DEFAULT
