@@ -26,7 +26,7 @@ DO i=1,mdsteps
 SELECT CASE (periodic_CV)
 
 CASE ("NONE")
-     Print*,"No Periodic applied"
+!     Print*,"No Periodic applied"
 CASE ("ALL")
     cv(i,2)=Apply_Piriodicity(cv(i,2))
     cv(i,3)=Apply_Piriodicity(cv(i,3))

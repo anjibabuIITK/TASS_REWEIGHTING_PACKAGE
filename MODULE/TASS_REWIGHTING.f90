@@ -77,7 +77,7 @@ CALL Calculate_RBias(rbias,hill,width,height,cv,hill_freq,cv_freq,mdsteps,ncolum
 &,cv_temp,sys_temp,biasfactor,gridmin2,gridmax2,gridwidth2,nbin,periodic)
 endif
 
-open(12,file="rbias.dat",status="new")
+open(12,file="rbias.dat",status="unknown")
 DO i=1,mtdsteps
 WRITE(12,*)rbias(i)
 ENDDO
