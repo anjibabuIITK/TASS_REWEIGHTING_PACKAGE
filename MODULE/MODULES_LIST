@@ -6,9 +6,23 @@ MODULES:
 2. GetSteps.f90
 
 3. Reweight_METAD.f90
+3.1 Calculate_ct()
+3.2 Calculate_vbias()
+3.3 Calculate_rbias()
+3.4 Calculatte-ct_2D()
+3.5 Calculate_vbias_2D()
+3.6 Calculate_rbias_2D()
+3.7 Calculatte-ct_3D()
+3.8 Calculatte-ct_3D()
+3.9 Calculate_vbias3D()
+3.9.1 Calculate_rbias_3D()
+
 
 4. Calculate_Prob.f90
-
+4.1 Prob_1D()
+4.2. Prob_2D()
+4.3 Prob_3D()
+4.4 Write_
 5. welcome.f90
 
 6. Print_Data.f90
@@ -16,3 +30,7 @@ MODULES:
 7. Check_File.f90
 
 8. Plumed_Read.f90
+
+9. Probability.f90
+
+10 TASS_REWIGHTING.f90

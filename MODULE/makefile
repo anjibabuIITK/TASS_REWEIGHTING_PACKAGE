@@ -4,8 +4,8 @@
 #and writting unbiased probabilities			      
 #===============Written by Rahul Verma==========================
 
-reweight_tass.exe : GetSteps.o welcome.o Check_File.o Plumed_Read.o Print_Data.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o TASS_REWIGHTING.o
-		   	gfortran -o reweight_tass.exe GetSteps.o welcome.o Check_File.o Print_Data.o Plumed_Read.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o  TASS_REWIGHTING.o
+reweight_tass.exe : GetSteps.o welcome.o Check_File.o Plumed_Read.o Print_Data.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o Probability.o  TASS_REWIGHTING.o
+		   	gfortran -o reweight_tass.exe -fcheck=all GetSteps.o welcome.o Check_File.o Print_Data.o Plumed_Read.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o Probability.o  TASS_REWIGHTING.o
 
 GetSteps.o : GetSteps.f90
 	gfortran -c GetSteps.f90
@@ -30,6 +30,9 @@ Prepare_Inputs.o : Prepare_Inputs.f90
 
 Reweight_METAD.o : Reweight_METAD.f90
 	gfortran -c Reweight_METAD.f90
+
+Probability.o : Probability.f90
+	gfortran -c Probability.f90
 
 TASS_REWIGHTING.o : TASS_REWIGHTING.f90
 	gfortran -c TASS_REWIGHTING.f90

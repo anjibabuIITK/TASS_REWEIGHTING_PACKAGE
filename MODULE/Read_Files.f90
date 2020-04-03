@@ -17,10 +17,9 @@ open(unit=11,file=cvfile,status='old')
 mdsteps=NSteps(11)
 ncol=Get_Columns(11)
 ALLOCATE(cv(mdsteps,ncol))
-
+PRINT*,ncol
 DO i=1,mdsteps
   READ(11,*)cv(i,1:)
-
 !-------------------------!
 ! Applying Periodicity
 SELECT CASE (periodic_CV)

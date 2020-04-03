@@ -15,7 +15,7 @@ REAL*8 :: deltaT, alpha, kbT, diff_s2, ds2, ss, hh, dum
 INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
-
+OPEN(21,FILE="vbias.dat")
 ALLOCATE(vbias(mdsteps))
 mtd_col=mtd_on_whichCV+1
 
@@ -38,9 +38,9 @@ DO i_md=1,mdsteps
     dum=dum+hh*DEXP(-diff_s2/ds2)
    END DO
 vbias(i_md)=dum
-!write(21,*) i_md, vbias(i_md)
+WRITE(21,101) i_md, vbias(i_md)
 END DO
-
+101 FORMAT (I10,F16.6)
 END SUBROUTINE Calculate_VBias           
 
 !---------------------------------------------------------!
@@ -48,7 +48,7 @@ SUBROUTINE Calculate_Ct_factor(hill,width,height,mtd_steps,mtd_on_whichCV, &
            & ct,cv_temp,sys_temp,biasfactor,grid,nbin,periodic)
 !gridmin2,gridmax2,gridwidth2
 IMPLICIT NONE
-REAL*8, INTENT(IN) ::  grid(3,*),cv_temp,sys_temp,biasfactor
+REAL*8, INTENT(IN) ::  grid(30,3),cv_temp,sys_temp,biasfactor
 REAL*8, INTENT(IN) :: height(mtd_steps), hill(mtd_steps), width(mtd_steps)
 INTEGER,INTENT(IN) :: mtd_steps,mtd_on_whichCV,nbin
 LOGICAL, INTENT(IN):: periodic
@@ -70,11 +70,12 @@ ALLOCATE(ct(mtd_steps))
  kbT = kb*cv_temp
  kTb = kbT*biasfactor
 
+OPEN(22,FILE="ct.dat")
 WRITE(*,*) 'calculating  c(t)'
 
  DO i_s2=1,nbin
 !    grid(i_s2)=gridmin2+dfloat(i_s2-1)*gridwidth2
-    grid1(i_s2)=grid(1,2)+dfloat(i_s2-1)*grid(3,2)
+    grid1(i_s2)=grid(2,1)+dfloat(i_s2-1)*grid(2,3)
  END DO
 
         fes1=0.d0
@@ -106,20 +107,24 @@ WRITE(*,*) 'calculating  c(t)'
         END DO
 
     ct(i_mtd)=kbT*DLOG(num/den)
+WRITE(22,101)i_mtd,ct(i_mtd)
       END DO
+101 FORMAT (I10,F16.6)
 
 END SUBROUTINE Calculate_Ct_factor
 
 !-------------------------------------------------------------!
-SUBROUTINE Calculate_RBias(rbias,hill,width,height,cv,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
-           & cv_temp,sys_temp,biasfactor,grid,nbin,periodic)
+SUBROUTINE Reweight_METAD_Bias(rbias,vbias,ct,hill,width,height,cv,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
+           & cv_temp,KbT,sys_temp,biasfactor,grid,nbin,periodic)
 
 IMPLICIT NONE
 INTEGER,INTENT(IN) :: mtd_steps, mdsteps, w_cv, w_hill, ncol, mtd_on_whichCV, nbin
 REAL*8, INTENT(IN) :: cv(mdsteps,ncol), hill(mtd_steps), height(mtd_steps), width(mtd_steps)
 REAL*8, INTENT(IN) :: cv_temp, sys_temp,biasfactor
-REAL*8, INTENT(IN) ::  grid(3,*)
+REAL*8, INTENT(IN) ::  grid(30,3)
 LOGICAL, INTENT(IN):: periodic
+REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
+REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 
 !Local Variables
 INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col
@@ -131,6 +136,8 @@ REAL*8 :: diff_s2, ds2, ss, hh, dum, num, den
 
 REAL*8, ALLOCATABLE, INTENT(OUT)::rbias(:)
 ALLOCATE(vbias(mdsteps),ct(mtd_steps),rbias(mdsteps))
+
+kbT = kb*cv_temp
 
 ! Call Calculate_vbias()
 CALL Calculate_VBias(cv,hill,width,height,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
@@ -153,8 +160,6 @@ i_mtd=(i_md*w_cv/w_hill)
 
 !PRINT*,rbias(i_md)
 ENDDO
-
-! Calculate RCT factor and pass it main code
-END SUBROUTINE Calculate_RBias
+END SUBROUTINE Reweight_METAD_Bias
 
 END MODULE Reweight_MTD

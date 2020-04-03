@@ -11,12 +11,15 @@ USE Plumed_Read
 USE GetSteps
 USE ReadFiles
 USE Reweight_MTD
+USE Probability
 USE Print_Data
 !======================================================================================================================
 IMPLICIT NONE
 
 CALL Welcome_Message()
-!CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max,nmetad)
+! Setting all required input variables to default values
+CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max&
+        &,nmetad,prob_dimension,mtd_dimension)
 
 ! Check inputfiles 
 CALL Is_File_Exist('input.inp ')
@@ -25,36 +28,29 @@ CALL Is_File_Exist('plumed.dat')
 ! Read plumed.dat 
 CALL Read_Plumed_Input()
 
+! Get user input values
 CALL Get_Inputs(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor,periodic, &
-        & nbin,t_min,t_max,grid,mtd_on_whichCV)
+        & nbin,t_min,t_max,grid,mtd_on_whichCV,prob_dimension,mtd_dimension)
 
+! Print the inputs
 CALL data_print (cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,biasfactor,periodic, &
-        & nbin,t_min,t_max,grid,mtd_on_whichCV)
+        & nbin,t_min,t_max,grid,mtd_on_whichCV,prob_dimension,mtd_dimension)
 
+! Read CV file
 CALL ReadCVFile(cvfile,cv,mdsteps,ncol,periodic_CV)
 
-PRINT*,cvfile
-open(10,file=cvfile,status='old')
-
-CALL GetColumns(10,ncolumn)
-CALL get_steps(10,mdsteps)
-
-PRINT*," No. Of Columns: ",ncolumn
-PRINT*," No. Of Steps  : ",mdsteps
-CLOSE(10)
-!PRINT*,"HERE"
-
+!if MTD ON, Reweight MTD
 if(metad) then
-!CALL Calculate_Ct_Factor()
-!CALL Calculate_vbias()
-!CALL Calculate_Prob()
 PRINT*,"METAD is ON"
-
 CALL ReadHills(hillfile,hill,width,height,mtd_steps,periodic)
-CALL Calculate_RBias(rbias,hill,width,height,cv,hill_freq,cv_freq,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
-     & cv_temp,sys_temp,biasfactor,grid,nbin,periodic) 
+
+CALL Reweight_METAD_Bias(rbias,vbias,ct,hill,width,height,cv,hill_freq,cv_freq,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
+     & cv_temp,KbT,sys_temp,biasfactor,grid,nbin,periodic) 
 endif
-!CALL Calculate_Prob()
+
+! Calculte probability
+CALL Calculate_Probability(nbin,ncv,mdsteps,rbias,grid,cv,KbT,t_min,t_max,prob_dimension,metad)
+
 ENDPROGRAM TASS
 !---------------------!
 ! 
