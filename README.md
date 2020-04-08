@@ -32,6 +32,8 @@
 	    plumed.dat
 	    input.inp
  	
-		Cheers!
+	
+	
+		Ceers!
 		Anji 
 		13-03-2020
