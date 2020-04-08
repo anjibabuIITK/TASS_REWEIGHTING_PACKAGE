@@ -25,10 +25,9 @@ CONTAINS
 !--------------------------------------------------------------------------------------------------------------------------!
 ! subroutine to initialize all the variables
 SUBROUTINE Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,&
-            &t_max,nmetad,prob_dimension,mtd_dimension,mtd_on_whichCV)
+            &t_max,nmetad,prob_dimension,mtd_dimension)
 IMPLICIT NONE
 REAL*8, INTENT(INOUT):: cv_temp, sys_temp
-INTEGER, INTENT(INOUT):: mtd_on_whichCV
 INTEGER, INTENT(INOUT)::ncv, uscv, mtdcv,hill_freq,cv_freq,nbin,t_min,t_max,nmetad,prob_dimension,mtd_dimension
 CHARACTER (len=20), INTENT(INOUT)::cvfile,hillfile
 LOGICAL, INTENT(INOUT)::metad,periodic
@@ -37,7 +36,7 @@ cv_temp=300.d0; sys_temp=300.d0
 ncv=3; uscv=1; mtdcv=1;hill_freq=500;cv_freq=10
 cvfile="COLVAR";hillfile="HILLS"
 metad=.TRUE.;periodic=.FALSE.;nbin=101;t_min=1;nmetad=1
-prob_dimension=1;mtd_dimension=1;mtd_on_whichCV=2
+prob_dimension=1;mtd_dimension=1
 
 open(12, file="COLVAR", status="old")
 t_max=NSteps(12)

@@ -13,13 +13,14 @@ USE ReadFiles
 USE Reweight_MTD
 USE Probability
 USE Print_Data
+USE omp_lib
 !======================================================================================================================
 IMPLICIT NONE
 
 CALL Welcome_Message()
 ! Setting all required input variables to default values
 CALL Set_defaults(cvfile,hillfile,cv_temp, sys_temp,ncv, uscv, mtdcv,hill_freq,cv_freq,metad,periodic,nbin,t_min,t_max&
-        &,nmetad,prob_dimension,mtd_dimension)
+        &,nmetad,prob_dimension,mtd_dimension,mtd_on_whichCV)
 
 ! Check inputfiles 
 CALL Is_File_Exist('input.inp ')
@@ -41,11 +42,10 @@ CALL ReadCVFile(cvfile,cv,mdsteps,ncol,periodic_CV)
 
 !if MTD ON, Reweight MTD
 if(metad) then
-PRINT*,"METAD is ON"
-CALL ReadHills(hillfile,hill,width,height,mtd_steps,periodic)
+PRINT*,"METAD is Reweighting..."
 
-CALL Reweight_METAD_Bias(rbias,vbias,ct,hill,width,height,cv,hill_freq,cv_freq,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
-     & cv_temp,KbT,sys_temp,biasfactor,grid,nbin,periodic) 
+CALL Reweight_METAD(hillfile,rbias,cv,hill_freq,cv_freq,mdsteps,ncol,mtd_on_whichCV, &
+           & cv_temp,KbT,sys_temp,biasfactor,grid,nbin,periodic,mtd_dimension)
 endif
 
 ! Calculte probability

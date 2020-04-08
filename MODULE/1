@@ -18,7 +18,7 @@ REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 !OPEN(21,FILE="vbias.dat")
 ALLOCATE(vbias(mdsteps))
-mtd_col=mtd_on_whichCV
+mtd_col=mtd_on_whichCV+1
 
 ! Temp in energy units
  kbT = kb*cv_temp
@@ -206,6 +206,7 @@ kbT = kb*cv_temp
 !Reading HILLS file
 CALL ReadHills_new(hillfile,hill,width,height,mtd_steps,periodic,mtd_dimension)
 
+print*, "mtd_dimension =",mtd_dimension, " MTD_STEPS =",mtd_steps
 CALL  Get_vbias(cv,hill,width,height,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
            & vbias,cv_temp,sys_temp,biasfactor,mtd_dimension,periodic)
 
@@ -213,17 +214,21 @@ CALL  Get_vbias(cv,hill,width,height,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_w
 !DO i=1,mdsteps
 !WRITE(*,101) i, vbias(i)
 !END DO
+
 !101 FORMAT (I10,F16.6)
 
 CALL Get_Ct_factor(hill,width,height,mdsteps,ncol,mtd_steps,mtd_on_whichCV, & 
            & ct,cv_temp,sys_temp,biasfactor,grid,nbin,periodic,mtd_dimension)
 
 
-!DO i=1,mtd_steps
-!WRITE(*,101) i, ct(i)
-!END DO
+DO i=1,mtd_steps
+WRITE(*,101) i, ct(i)
+END DO
 
-!101 FORMAT (I10,F18.6)
+101 FORMAT (I10,F18.6)
+print*, "TEST PASSED"
+
+STOP
 
 
 DO i_md=1,mdsteps
@@ -237,9 +242,8 @@ i_mtd=(i_md*w_cv/w_hill)
       ENDIF
 
 !PRINT*,rbias(i_md)
-ENDDO
-!print*, "TEST PASSED"
 DEALLOCATE(hill,width,height,vbias,ct)
+ENDDO
 
 END SUBROUTINE Reweight_METAD
 !-----------------------------------------------------------------------------------------------------------!
@@ -259,7 +263,7 @@ INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 !OPEN(21,FILE="vbias.dat")
-mtd_col=mtd_on_whichCV
+mtd_col=mtd_on_whichCV+1
 
 ! Temp in energy units
  kbT = kb*cv_temp
@@ -360,7 +364,7 @@ INTEGER,INTENT(IN) :: mtd_steps, mdsteps, mtd_on_whichCV,mtd_dimension, nbin, nc
 REAL*8, INTENT(IN) :: hill(mtd_dimension,mtd_steps), height(mtd_steps), width(mtd_dimension,mtd_steps)
 LOGICAL, INTENT(IN):: periodic
 REAL*8, INTENT(IN) :: grid(30,3),cv_temp,sys_temp,biasfactor
-REAL*8, INTENT(OUT), ALLOCATABLE:: ct(:)
+REAL*8, INTENT(OUT):: ct(mtd_steps)
 
 !local variables
 REAL*8 :: mtd_cv1, mtd_cv2, mtd_cv3, sigma1, sigma2, sigma3, diff_s1, diff_s2, diff_s3
@@ -373,7 +377,7 @@ INTEGER :: i, j, mtd_max, i_mtd, i_md, mtd_col,i_s2
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 
-ALLOCATE(ct(mtd_steps))
+
 mtd_col=mtd_on_whichCV
 
  kbT = kb*cv_temp
