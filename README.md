@@ -21,7 +21,19 @@
 	   	git push origin master
 	   	git pull origin master
 
+ *  USAGE:
+ 
+ 	    cd MODULE
+	    make
+	    ./reweight_tass.exe
 
-		Cheers!
+  * MANDATORY INPUTS:
+  	    
+	    plumed.dat
+	    input.inp
+ 	
+	
+	
+		Ceers!
 		Anji 
 		13-03-2020
