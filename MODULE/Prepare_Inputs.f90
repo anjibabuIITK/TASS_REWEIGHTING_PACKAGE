@@ -1,8 +1,9 @@
 MODULE Prepare_Inputs
 USE GetSteps
-!========================================Preparing Inputs================================================================
-!                       THIS SUBROUTINE IS WRITTEN TO PREPARE THE USER INPUT
-!========================================================================================================================
+!========================================Preparing Inputs===============================================================!
+!                       THIS SUBROUTINE IS WRITTEN TO PREPARE THE USER INPUT						!
+! 			---Written and Modified by Rahul Verma and AnjiBabu---						!
+!=======================================================================================================================!
 IMPLICIT NONE
 INTEGER :: i,n, k,io_stat, ncol,ncolumn, mdsteps,t_min,t_max,mtd_steps
 INTEGER :: ncv,uscv, mtdcv,hill_freq,cv_freq,nbin,nmetad,mtd_on_whichCV
@@ -180,7 +181,7 @@ END SELECT
 ENDDO
 !---------------------------------!
 ! Setting default Periodicity
-IF(periodic .eqv..FALSE.) THEN
+IF(periodic .eqv. .FALSE.) THEN
 periodic_CV="NONE"
 ENDIF
 !---------------------------------!
