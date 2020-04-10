@@ -1,0 +1,189 @@
+#!/bin/bash
+
+#:%s/^[ ]\+/\t/g [TO REPLACE SPACE WITH TAB IN vim]
+
+#Help
+Info () {
+
+cat<<EOD
+
+!---------------------------------------------------------------------------------------------------------------------!
+!FORTRAN PROGRAM WRITTEN TO COMPUTE UNBIASED DISTRIBUTION (1D AND 2D)FROM TASS SIMULATION ALONG USER DEFINED          !
+!COLLECTIVE COORDINATES..                                                                                             !
+!ORIGINAL CODE WRITTEN BY Shalini Awasthi (ashalini@iitk.ac.in)                                                       !
+!MODIFIED BY Rahul Verma (vrahul@iitk.ac.in)                                                                          !
+!                                                                                                                     !
+!kt = System Temeprature ; kt0 = Extended CV Temperature ; bias_fact = Biased Factor for MTD ; ct = ct Factor         !
+!t_min = Minimum MD steps ; t_max = Maximum MD steps ; narg = Argumets ; ncv = Numer of CV ; v_baias = Total MTD bias !
+!cv_mtd = m = MTD CV index ; u_cv = u = Umbrella CV index ; t_cv = t = Temeprature CV index                           !
+!UCV = U cv argument ; MTD = MTD cv argument ; Prob_nD = Dimension of Unbiased Probability                            !
+!CV_num = Probability is the Dimension of ; pfrqMD = Print Frequency argument ; w_cv Print Frequency in cvmdck File   !
+!dtMTD  = Print Frequency argument for MTD bias added ; w_hill = Print Frequency in colvar File                       !
+!gridmin = Minimum Grid Size = gridmax = Maximum Grid Size ; griddif = Grid Difference                                !
+!width = Hill Width of Gaussian Bias in MTD ; ht = Hill Height of Gaussian Bias in MTD ; ht = MTD CV Displacement     !
+!kb = Boltzman Constant in A.U. ; prob = 1D Probability ; prob_2D = 2D Probability                                    !
+!---------------------------------------------------------------------------------------------------------------------!
+
+EOD
+
+exit 0;
+}
+
+#Help
+Help () {
+
+cat<<EOD
+
+Usage: ./configure [flags] compiler
+
+    where compiler is one of: [[ gnu, intel ]]
+
+                              COMPILERS
+                 -----------------------------------
+    Compiler Set |     C     |    C++    | Fortran 
+    ------------------------------------------------
+      gnu        |    gcc    |   g++     | gfortran
+      intel      |    icc    |   icpc    | ifort
+
+    Flags (Optional):
+      -openmp        Use OpenMP pragmas to parallelize soeme of the loops .
+===============================================================================
+
+EOD
+
+exit 0;
+}
+
+
+#Is it help option or debug option
+info=0 ; i=1
+
+while [ $i -le $# ];
+do
+  #Select the i-th argument
+  eval option=\$$i
+  case $option in
+    -help|-h)
+      Help
+      exit 0
+      ;;
+    -info|-i)
+      Info
+      ;;
+  esac
+  i=`expr $i + 1`
+done
+os=`uname -s`
+echo 
+echo "Found $os Operating System"
+compiler=''
+echo "PLEASE SPECIFY THE COMPILER [gnu/intel]" 
+read compiler
+
+case $os in
+
+    Linux)
+#gfortran
+
+echo '#makefile' > makefile
+echo "#===============================================================" >> makefile
+echo "#This makefile written to compile the unbiasing program	      " >> makefile
+echo "#and writting unbiased probabilities			      " >> makefile
+echo "#===============Written by Rahul Verma==========================" >> makefile
+
+echo >> makefile
+
+#echo '.RECIPEPREFIX+=' >> makefile
+#echo >> makefile
+echo 'BASH = /bin/bash' 		>> makefile
+echo 'INSTDIR = $(shell cd ../ && pwd)'	>> makefile
+
+           if [ "$compiler" = "gnu" ]
+           then
+
+echo 'FC = gfortran'			>> makefile
+echo 'FFLAGS = -g -O0 -fcheck=all'	>> makefile
+echo 'OMP = -fopenmp'			>> makefile
+
+           elif [ "$compiler" = "intel" ]
+           then
+
+echo 'FC = ifort'			>> makefile
+#echo 'FFLAGS = -g -O0 -fcheck=all'	>> makefile
+#echo 'OMP = -fopenmp'			>> makefile
+
+#echo 'TAR_PATH = $(shell basename $PWD)' >> makefile
+echo 					>> makefile
+
+else echo "COPILER NOT FOUND EXITING ..."  && exit
+
+fi
+
+echo 'OUTPUT =  GetSteps.o welcome.o Check_File.o Print_Data.o Plumed_Read.o Read_Files.o Prepare_Inputs.o Reweight_METAD.o Probability.o  TASS_REWIGHTING.o'				 >> makefile
+echo 					>> makefile
+
+echo 'reweight_tass.exe : $(OUTPUT)'	>> makefile
+echo '	$(FC) $(FFLAGS) $(OMP) -o reweight_tass.exe $(OUTPUT)' >> makefile
+echo 					>> makefile
+echo 'GetSteps.o : GetSteps.f90'	>> makefile
+echo '	$(FC) -c GetSteps.f90'		>> makefile
+echo 					>> makefile
+echo 'welcome.o : welcome.f90'		>> makefile
+echo '	$(FC) -c welcome.f90'		>> makefile
+echo					>> makefile
+echo 'Check_File.o : Check_File.f90'	>> makefile
+echo '	$(FC) -c Check_File.f90' 	>> makefile
+echo 					>> makefile
+echo 'Plumed_Read.o : Plumed_Read.f90'  >> makefile
+echo '	$(FC) -c Plumed_Read.f90'	>> makefile
+echo 					>> makefile
+echo 'Print_Data.o : Print_Data.f90'	>> makefile
+echo '	$(FC) -c $(FFLAGS) Print_Data.f90' >> makefile
+echo					>> makefile
+echo 'Read_Files.o : Read_Files.f90'	>> makefile
+echo '	$(FC) -c $(FFLAGS) Read_Files.f90' >> makefile
+echo 					>> makefile
+echo 'Prepare_Inputs.o : Prepare_Inputs.f90' >> makefile
+echo '	$(FC) -c $(FFLAGS) Prepare_Inputs.f90' >> makefile
+echo 					>> makefile
+echo 'Reweight_METAD.o : Reweight_METAD.f90' >> makefile
+echo '	$(FC) -c $(FFLAGS) $(OMP) Reweight_METAD.f90' >> makefile
+echo					>> makefile
+echo 'Probability.o : Probability.f90'	>> makefile
+echo '	$(FC) -c $(FFLAGS) Probability.f90' >> makefile
+echo					>> makefile
+echo 'TASS_REWIGHTING.o : TASS_REWIGHTING.f90'	>> makefile
+echo '	$(FC) -c TASS_REWIGHTING.f90'	>> makefile
+echo					>> makefile
+echo 'clean   :'			>> makefile
+echo '	rm *.o *.mod *.exe'		>> makefile
+echo					>> makefile
+echo 'distclean:'			>> makefile
+echo '	rm $(INSTDIR)/src/*.o'		>> makefile
+echo '	rm $(INSTDIR)/src/*.mod'	>> makefile
+echo '	rm $(INSTDIR)/bin/reweight_tass.exe' >> makefile
+echo					>> makefile
+echo 'all : reweight_tass.exe'		>> makefile
+echo '	bash -c "mkdir -p $(INSTDIR)/bin"' >> makefile
+echo '	bash -c "mkdir -p $(INSTDIR)/src"' >> makefile
+echo '	@if [ -d $(INSTDIR) ];\'	>> makefile
+echo '		then \'			>> makefile
+echo '		cp reweight_tass.exe $(INSTDIR)/bin;\' >> makefile
+echo '		mv *.o *.mod $(INSTDIR)/src;\'	>> makefile
+echo '		echo "Installed in $(INSTDIR)";\' >> makefile
+echo '	else \'				>> makefile
+echo '		echo "Sorry, $(INSTDIR) does not exist";\' >> makefile
+echo '	fi'				>> makefile
+echo					>> makefile
+echo 'tar :'				>> makefile
+echo '	tar -czvf TASS_REWEIGHTING.tzr.gz $(TAR_PATH)' >> makefile
+cp makefile MODULE/
+esac
+echo ""
+echo "A MAKE FILE IS WRITTEN ACCORDING TO "$compiler" COMPILER "
+echo "YOU CAN TYPE MAKE TO COMPILE ALL THE PROGRAMS"
+echo ""
+echo "NOW TYPE ./INSTALL all TO COMPILE THE CODE" 
+echo "!-----------------------------------------------!"
+echo "!----------Written by Rahul Verma---------------!"
+echo "!-----------------------------------------------!"

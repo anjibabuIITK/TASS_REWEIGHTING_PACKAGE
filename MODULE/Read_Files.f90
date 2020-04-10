@@ -1,108 +1,61 @@
 MODULE ReadFiles
 USE GetSteps
 CONTAINS
-
-!-----------------------------------!
-SUBROUTINE ReadCVFile(cvfile,cv,mdsteps,ncol,periodic_CV)
+!---------------------------------------------------------------------------!
+SUBROUTINE ReadCVFile(cvfile,cv,i_cv,mdsteps,ncol,periodic_CV,periodic)
 IMPLICIT NONE
-INTEGER,INTENT(INOUT)::mdsteps,ncol
-REAL*8, INTENT(OUT), ALLOCATABLE::cv(:,:)
-CHARACTER(len=20),INTENT(IN)::periodic_CV,cvfile
-INTEGER::i,j
-REAL*8::time
+INTEGER :: i,j,k,n,it,mdsteps,ncol,i_cv(30)
+REAL*8,ALLOCATABLE :: cv(:,:)
+CHARACTER(len=20)   :: periodic_CV,cvfile
+LOGICAL, INTENT(IN) :: periodic
 
 CALL SYSTEM("cp COLVAR COLVAR.old")
 CALL SYSTEM('sed -i "/^#/d" COLVAR')
-
 open(unit=11,file=cvfile,status='old')
 mdsteps=NSteps(11)
-ncol=Get_Columns(11)-1
+ncol=Get_Columns(11)
+
 ALLOCATE(cv(mdsteps,ncol))
-PRINT*,"NCOL except time: ", ncol
-DO i=1,mdsteps
-  READ(11,*)time,cv(i,1:)
-!-------------------------!
+IF (periodic) THEN
+!-------------Check Given Input Type (Character/Integer)--------------------!
+it = ICHAR(periodic_CV(1:1))           !Convet into ASCII character set	    !
+IF (it .ge. 48 .and. it .le. 57)  THEN !Check If Integer (48 - 57 is Integer)
+READ(periodic_CV,'(I5)') n             !IF yes then read that as in integer !
+!---------------------------------------------------------------------------!
 ! Applying Periodicity
-SELECT CASE (periodic_CV)
-
-CASE ("NONE")
-!     Print*,"No Periodic applied"
-CASE ("ALL")
-    cv(i,1)=Apply_Piriodicity(cv(i,1))
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-
-if(ncol > 2) then
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-    cv(i,4)=Apply_Piriodicity(cv(i,4))
-
-endif
-!     Print*, "All the CVs are periodic"
-CASE ("CV1")
- !    Print*, "CV1 is periodic"
-    cv(i,1)=Apply_Piriodicity(cv(i,1))
-CASE ("CV2")
- !    Print*, "CV2 is periodic"
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-
-CASE ("CV3")
- !    Print*, "CV3 is periodic"
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-
-CASE ("CV4")
- !    Print*, "CV4 is periodic"
-    cv(i,4)=Apply_Piriodicity(cv(i,4))
-
-CASE ("CV1.and.CV2")
- !    Print*, "CV1 and CV2 are periodic"
-    cv(i,1)=Apply_Piriodicity(cv(i,1))
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-
-CASE ("CV2.and.CV3")
- !    Print*, "CV2 and CV3 are periodic"
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-CASE ("CV3.and.CV4")
- !    Print*, "CV3 and CV4 are periodic"
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-    cv(i,4)=Apply_Piriodicity(cv(i,4))
-CASE ("CV1.and.CV4")
- !    Print*, "CV1 and CV4 are periodic"
-    cv(i,1)=Apply_Piriodicity(cv(i,1))
-    cv(i,4)=Apply_Piriodicity(cv(i,4))
-CASE ("CV2.and.CV4")
- !    Print*, "CV2 and CV4 are periodic"
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-    cv(i,4)=Apply_Piriodicity(cv(i,4))
-CASE ("CV1.and.CV3")
- !    Print*, "CV1 and CV3 are periodic"
-    cv(i,1)=Apply_Piriodicity(cv(i,1))
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-
-CASE ("CV1.and.CV2.and.CV3")
- !    Print*, "CV1 ,CV2 and CV3 are periodic"
-    cv(i,1)=Apply_Piriodicity(cv(i,1))
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-CASE ("CV2.and.CV3.and.CV4")
- !    Print*, "CV2 ,CV3 and CV4 are periodic"
-    cv(i,2)=Apply_Piriodicity(cv(i,2))
-    cv(i,3)=Apply_Piriodicity(cv(i,3))
-    cv(i,4)=Apply_Piriodicity(cv(i,4))
-
-CASE DEFAULT
-!     PRINT*,"CV > 4 is not implimented"
-END SELECT
-!-------------------------!
-
-
+DO i = 1,mdsteps
+READ(11,*,END=100) cv(i,1:)
+  DO k = 1,n
+    j = i_cv(k)
+    cv(i,j)=Apply_Piriodicity(cv(i,j))
+  ENDDO
 ENDDO
-CLOSE(11)
-END SUBROUTINE ReadCVFile
-!-----------------------------------!
+
+ELSE  ! If not found as an Integer then do the following 
+
+DO i=1,mdsteps
+  READ(11,*)cv(i,1:)
+!---------------------------------------------------------------------------!
+! Applying Periodicity
+IF (periodic_CV .eq. 'NONE') THEN
+cv(i,1:) = cv (i,1:)
+ELSEIF (periodic_CV .eq. 'ALL') THEN
+   DO j = 2,ncol
+    cv(i,j)=Apply_Piriodicity(cv(i,j))
+   ENDDO
+ENDIF
+ENDDO ; ENDIF
+ELSE
+DO i = 1,mdsteps
+READ(11,*,END=100) cv(i,1:)
+ENDDO
+ENDIF
+100 CLOSE(11)
+END
+!---------------------------------------------------------------------------!
 REAL FUNCTION Apply_Piriodicity(AnyValue)
 IMPLICIT NONE
-REAL*8:: AnyValue
-
+REAL*8 :: AnyValue
    if (AnyValue .gt. 3.14d0 ) AnyValue=AnyValue - 6.28d0
    if (AnyValue .lt.-3.14d0 ) AnyValue=AnyValue + 6.28d0
 
@@ -110,16 +63,16 @@ Apply_Piriodicity=AnyValue
 
 END FUNCTION Apply_Piriodicity
 !
-!-----------------------------------!
+!---------------------------------------------------------------------------!
 SUBROUTINE ReadHills(hillfile,hill,width,height,mtd_steps,periodic)
 IMPLICIT NONE
-INTEGER,INTENT(INOUT)::mtd_steps
-REAL*8, INTENT(OUT), ALLOCATABLE::hill(:),width(:),height(:)
-CHARACTER(len=20),INTENT(IN)::hillfile
-LOGICAL, INTENT(IN)::periodic
-INTEGER::i,j,i_mtd
-REAL*8::time
+INTEGER :: i,j,i_mtd
+INTEGER,INTENT(INOUT) :: mtd_steps
+REAL*8 :: time
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
+REAL*8, INTENT(OUT), ALLOCATABLE :: hill(:),width(:),height(:)
+CHARACTER(len=20),INTENT(IN) :: hillfile
+LOGICAL, INTENT(IN) :: periodic
 
 
 CALL SYSTEM('cp HILLS HILLS.old')
@@ -138,7 +91,7 @@ ENDDO
 
 CLOSE(12)
 END SUBROUTINE ReadHills
-!-----------------------------------!
+!---------------------------------------------------------------------------!
 SUBROUTINE ReadHills_new(hillfile,hill,width,height,mtd_steps,periodic,mtd_dimension)
 IMPLICIT NONE
 INTEGER,INTENT(IN)::mtd_dimension
@@ -161,8 +114,11 @@ ALLOCATE(hill(mtd_dimension,mtd_steps),width(mtd_dimension,mtd_steps),height(mtd
 
 DO i_mtd=1,mtd_steps
 
-        READ(12,*)time,hill(1:mtd_dimension, i_mtd),width(1:mtd_dimension,i_mtd),height(i_mtd)
-       
+        READ(12,*,END=100)time,hill(1:mtd_dimension, i_mtd),width(1:mtd_dimension,i_mtd),height(i_mtd)
+!        DO j = 1,mtd_dimension
+!         READ(12,*,END=100)time,hill(j,i_mtd)!,width(1:mtd_dimension,i_mtd),height(i_mtd)
+!WRITE(6,101)time,hill(j,i_mtd)!,width(1:mtd_dimension,i_mtd),height(i_mtd)
+!        ENDDO
         if(periodic) then
             DO i=1,mtd_dimension
                hill(i,i_mtd)=Apply_Piriodicity(hill(i,i_mtd))
@@ -172,8 +128,9 @@ DO i_mtd=1,mtd_steps
         height(i_mtd)=height(i_mtd)*kj_to_kcal
 
 ENDDO
-
-CLOSE(12)
+101 FORMAT (F16.4,F16.4,F16.4,F16.4)
+100 CLOSE(12)
+!STOP
 END SUBROUTINE ReadHills_new
 !-----------------------------------!
 END MODULE ReadFiles

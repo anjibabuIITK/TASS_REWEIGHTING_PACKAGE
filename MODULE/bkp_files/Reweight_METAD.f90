@@ -10,16 +10,15 @@ IMPLICIT NONE
 INTEGER,INTENT(IN) :: mtd_steps, mdsteps, w_cv, w_hill,ncol,mtd_on_whichCV
 REAL*8, INTENT(IN) :: cv(mdsteps,ncol), hill(mtd_steps), height(mtd_steps), width(mtd_steps)
 REAL*8, INTENT(IN) :: cv_temp, sys_temp,biasfactor
-REAL*8, ALLOCATABLE, INTENT(OUT) :: vbias(:)
+REAL*8, ALLOCATABLE, INTENT(OUT):: vbias(:)
 !Local Variables
+REAL*8 :: deltaT, alpha, kbT, diff_s2, ds2, ss, hh, dum  
 INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col
-REAL*8  :: deltaT, alpha, kbT, diff_s2, ds2, ss, hh, dum  
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
-!-----------------------------------------------------!
-OPEN(21,FILE="vbias.dat",STATUS="unknown")
+!OPEN(21,FILE="vbias.dat")
 ALLOCATE(vbias(mdsteps))
-mtd_col=mtd_on_whichCV+1
+mtd_col=mtd_on_whichCV
 
 ! Temp in energy units
  kbT = kb*cv_temp
@@ -44,9 +43,10 @@ DO i_md=1,mdsteps
 !$OMP END DO
 !$OMP END PARALLEL
 vbias(i_md)=dum
-WRITE(21,101) i_md, vbias(i_md)
+!WRITE(21,101) i_md, vbias(i_md)
 END DO
-101 FORMAT (I10,F16.6)
+!101 FORMAT (I10,F16.6)
+!CLOSE(21)
 END SUBROUTINE Calculate_VBias           
 
 !---------------------------------------------------------!
@@ -54,11 +54,11 @@ SUBROUTINE Calculate_Ct_factor(hill,width,height,mtd_steps,mtd_on_whichCV, &
            & ct,cv_temp,sys_temp,biasfactor,grid,nbin,periodic)
 !gridmin2,gridmax2,gridwidth2
 IMPLICIT NONE
-REAL*8, INTENT(IN)  :: grid(30,3),cv_temp,sys_temp,biasfactor
-REAL*8, INTENT(IN)  :: height(mtd_steps), hill(mtd_steps), width(mtd_steps)
-INTEGER,INTENT(IN)  :: mtd_steps,mtd_on_whichCV,nbin
-LOGICAL, INTENT(IN) :: periodic
-REAL*8, INTENT(OUT), ALLOCATABLE :: ct(:)
+REAL*8, INTENT(IN) ::  grid(30,3),cv_temp,sys_temp,biasfactor
+REAL*8, INTENT(IN) :: height(mtd_steps), hill(mtd_steps), width(mtd_steps)
+INTEGER,INTENT(IN) :: mtd_steps,mtd_on_whichCV,nbin
+LOGICAL, INTENT(IN):: periodic
+REAL*8, INTENT(OUT), ALLOCATABLE:: ct(:)
 
 !local variables
 REAL*8 :: kbT,kTb
@@ -70,15 +70,16 @@ INTEGER :: i_s1, i_s2, i_s3, i_s4, nbin1, nbin2, nbin3, nbin4
 
 REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
+
 ALLOCATE(ct(mtd_steps))
 
  kbT = kb*cv_temp
  kTb = kbT*biasfactor
 
-OPEN(22,FILE="ct.dat",STATUS="unknown")
-WRITE(*,*) 'calculating  c(t)'
+!OPEN(22,FILE="ct.dat")
+!WRITE(*,*) 'calculating  c(t)'
 
- DO i_s2=1,nbin
+  DO i_s2=1,nbin
 !    grid(i_s2)=gridmin2+dfloat(i_s2-1)*gridwidth2
     grid1(i_s2)=grid(2,1)+dfloat(i_s2-1)*grid(2,3)
  END DO
@@ -91,8 +92,8 @@ WRITE(*,*) 'calculating  c(t)'
 
         num=0.D0
         den=0.D0
-!!$OMP PARALLEL
-!!$OMP DO
+!$OMP PARALLEL
+!$OMP DO
         DO i_s2=1,nbin
            diff_s2=grid1(i_s2)-ss
 !---------------
@@ -111,18 +112,16 @@ WRITE(*,*) 'calculating  c(t)'
            num=num+DEXP(-fes1(i_s2)/kbT)
            den=den+DEXP(-fes1(i_s2)/kTb)
         END DO
-!!$OMP END DO
-!!$OMP END PARALLEL
+!$OMP END DO
+!$OMP END PARALLEL
     ct(i_mtd)=kbT*DLOG(num/den)
-WRITE(22,101)i_mtd,ct(i_mtd)
+!WRITE(22,101)i_mtd,ct(i_mtd)
       END DO
-101 FORMAT (I10,F16.6)
-
+!101 FORMAT (I10,F16.6)
+!close(22)
 END SUBROUTINE Calculate_Ct_factor
 
 !-------------------------------------------------------------!
-!SUBROUTINE Calculate_RBias(rbias,vbias,ct,hill,width,height,cv,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
-!           & cv_temp,KbT,sys_temp,biasfactor,grid,nbin,periodic)
 SUBROUTINE Reweight_METAD_Bias(rbias,vbias,ct,hill,width,height,cv,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
            & cv_temp,KbT,sys_temp,biasfactor,grid,nbin,periodic)
 
@@ -130,9 +129,9 @@ IMPLICIT NONE
 INTEGER,INTENT(IN) :: mtd_steps, mdsteps, w_cv, w_hill, ncol, mtd_on_whichCV, nbin
 REAL*8, INTENT(IN) :: cv(mdsteps,ncol), hill(mtd_steps), height(mtd_steps), width(mtd_steps)
 REAL*8, INTENT(IN) :: cv_temp, sys_temp,biasfactor
-REAL*8, INTENT(IN) :: grid(30,3)
-REAL*8, PARAMETER  :: kb=1.9872041E-3 !kcal K-1 mol-1 
-REAL*8, PARAMETER  :: kj_to_kcal = 0.239006
+REAL*8, INTENT(IN) ::  grid(30,3)
+REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
+REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 LOGICAL, INTENT(IN):: periodic
 
 !Local Variables
@@ -142,8 +141,8 @@ REAL*8, ALLOCATABLE:: vbias(:),ct(:)
 !local variables
 REAL*8 :: kbT,kTb
 REAL*8 :: diff_s2, ds2, ss, hh, dum, num, den
-REAL*8, ALLOCATABLE, INTENT(OUT) :: rbias(:)
 
+REAL*8, ALLOCATABLE, INTENT(OUT)::rbias(:)
 ALLOCATE(vbias(mdsteps),ct(mtd_steps),rbias(mdsteps))
 
 kbT = kb*cv_temp
@@ -172,8 +171,6 @@ i_mtd=(i_md*w_cv/w_hill)
 ENDDO
 !$OMP END DO
 !$OMP END PARALLEL
-
-! Calculate RCT factor and pass it main code
 END SUBROUTINE Reweight_METAD_Bias
 !-----------------------------------------------------------------------------------------!
 SUBROUTINE Reweight_METAD(hillfile,rbias,cv,w_hill,w_cv,mdsteps,ncol,mtd_on_whichCV, &
@@ -186,7 +183,7 @@ REAL*8, INTENT(IN) :: cv_temp, sys_temp,biasfactor
 REAL*8, INTENT(IN) ::  grid(30,3)
 LOGICAL, INTENT(IN):: periodic
 CHARACTER(len=20),INTENT(IN)::hillfile
-!Local Variables
+!Local Variables 
 INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col,mtd_steps
 REAL*8, ALLOCATABLE:: vbias(:),ct(:),hill(:,:),width(:,:),height(:)
 
@@ -195,7 +192,7 @@ REAL*8 :: kbT,kTb
 REAL*8 :: diff_s2, ds2, ss, hh, dum, num, den
 
 
-REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
+REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 
 REAL*8, ALLOCATABLE, INTENT(OUT)::rbias(:)
@@ -218,7 +215,7 @@ CALL  Get_vbias(cv,hill,width,height,w_hill,w_cv,mdsteps,ncol,mtd_steps,mtd_on_w
 !END DO
 !101 FORMAT (I10,F16.6)
 
-CALL Get_Ct_factor(hill,width,height,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
+CALL Get_Ct_factor(hill,width,height,mdsteps,ncol,mtd_steps,mtd_on_whichCV, & 
            & ct,cv_temp,sys_temp,biasfactor,grid,nbin,periodic,mtd_dimension)
 
 
@@ -230,7 +227,7 @@ CALL Get_Ct_factor(hill,width,height,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
 
 
 DO i_md=1,mdsteps
-
+   
 i_mtd=(i_md*w_cv/w_hill)
 
       IF(i_mtd == 0) THEN
@@ -256,10 +253,10 @@ REAL*8, INTENT(IN) :: cv_temp, sys_temp,biasfactor
 REAL*8, INTENT(OUT):: vbias(mdsteps)
 LOGICAL, INTENT(IN) ::periodic
 !Local Variables
-REAL*8 :: deltaT, alpha, kbT, ds2, ht, dum, NM
+REAL*8 :: deltaT, alpha, kbT, ds2, ht, dum, NM  
 REAL*8 :: mtd_cv1, mtd_cv2, mtd_cv3, sigma1, sigma2, sigma3, diff_s1, diff_s2, diff_s3
 INTEGER :: mtd_max, i,j, i_md, i_mtd, mtd_col
-REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1
+REAL*8, PARAMETER :: kb=1.9872041E-3 !kcal K-1 mol-1 
 REAL*8, PARAMETER :: kj_to_kcal = 0.239006
 !OPEN(21,FILE="vbias.dat")
 mtd_col=mtd_on_whichCV
@@ -272,8 +269,6 @@ mtd_col=mtd_on_whichCV
 !print*, "MTD CV:",mtd_col
 !print*, "CV Temp: ",cv_temp," mdsteps:", mdsteps
 !=====>>>>> Calculating vbias <<<<<======!
-!PRINT*,mdsteps,mtd_col
-!STOP
 DO i_md=1,mdsteps
 
    mtd_max=(i_md*w_cv/w_hill)
@@ -283,7 +278,7 @@ DO i_md=1,mdsteps
 SELECT CASE (mtd_dimension)
 
  CASE(1)
-!PRINT*, "Reweighting 1D MTD.."
+!PRINT*, "Reweighting 1D MTD.."  
    mtd_cv1=cv(i_md,mtd_col)
    DO i_mtd=1,mtd_max
     sigma1=width(1,i_mtd)*width(1,i_mtd)
@@ -295,7 +290,7 @@ SELECT CASE (mtd_dimension)
    END DO
 
  CASE(2)
-!PRINT*, "Reweighting 2D MTD.."
+!PRINT*, "Reweighting 2D MTD.."  
   mtd_cv1=cv(i_md,mtd_col)
   mtd_cv2=cv(i_md,mtd_col+1)
 !
@@ -306,21 +301,21 @@ SELECT CASE (mtd_dimension)
     diff_s1=mtd_cv1-hill(1,i_mtd)
 !      if (periodic) diff_s1=Apply_Periodicity(diff_s1)
     diff_s1=diff_s1*diff_s1
-
+    
     diff_s2=mtd_cv2-hill(2,i_mtd)
 !      if (periodic) diff_s2=Apply_Periodicity(diff_s2)
     diff_s2=diff_s2*diff_s2
-
+    
     NM=((diff_s1/sigma1)+(diff_s2/sigma2))*0.5d0
     dum=dum+ht*DEXP(-NM)
   END DO
 
  CASE(3)
-PRINT*, "Reweighting 3D MTD.."
+PRINT*, "Reweighting 3D MTD.."  
   mtd_cv1=cv(i_md,mtd_col)
   mtd_cv2=cv(i_md,mtd_col+1)
   mtd_cv3=cv(i_md,mtd_col+2)
-!
+! 
     DO i_mtd=1,mtd_max
     sigma1=width(1,i_mtd)*width(1,i_mtd)
     sigma2=width(2,i_mtd)*width(2,i_mtd)
@@ -329,11 +324,11 @@ PRINT*, "Reweighting 3D MTD.."
     diff_s1=mtd_cv1-hill(1,i_mtd)
 !      if (periodic) diff_s1=Apply_Periodicity(diff_s1)
     diff_s1=diff_s1*diff_s1
-
+    
     diff_s2=mtd_cv2-hill(2,i_mtd)
 !      if (periodic) diff_s2=Apply_Periodicity(diff_s2)
     diff_s2=diff_s2*diff_s2
-
+    
     diff_s3=mtd_cv3-hill(3,i_mtd)
 !      if (periodic) diff_s3=Apply_Periodicity(diff_s3)
     diff_s3=diff_s3*diff_s3
@@ -345,10 +340,10 @@ PRINT*, "Reweighting 3D MTD.."
       WRITE(*,*) "MTD Dimension >3 has not implimented. "
       WRITE(*,*) "Change MTD_DIMENSION to <= 3"
       STOP
-END SELECT
+END SELECT 
 !------END Dimensionlity Select-----!
 
-vbias(i_md)=dum
+vbias(i_md)=dum  
 
 !WRITE(21,101) i_md, vbias(i_md)
 END DO
@@ -357,7 +352,7 @@ END DO
 END SUBROUTINE Get_vbias
 
 !---------------------------------------------------------!
-SUBROUTINE Get_Ct_factor(hill,width,height,mdsteps,ncol,mtd_steps,mtd_on_whichCV, &
+SUBROUTINE Get_Ct_factor(hill,width,height,mdsteps,ncol,mtd_steps,mtd_on_whichCV, & 
            & ct,cv_temp,sys_temp,biasfactor,grid,nbin,periodic,mtd_dimension)
 
 IMPLICIT NONE
@@ -406,7 +401,7 @@ END DO
 
         num=0.D0
         den=0.D0
-
+       
         DO i_s2=1,nbin
            diff_s1=grid1(1,i_s2)-hill(1,i_mtd)
 
@@ -416,7 +411,7 @@ END DO
        fes1(i_s2)=fes1(i_s2)-ht*DEXP(-diff_s1/sigma1)
 ! Numerator
            num=num+DEXP(-fes1(i_s2)/kbT)
-! Denomirator
+! Denomirator          
            den=den+DEXP(i-fes1(i_s2)/kTb)
         END DO
 !
@@ -434,12 +429,12 @@ END DO
 
 !       if(periodic)  diff_s1=Apply_Piriodicity(diff_s1)
 !       if(periodic)  diff_s2=Apply_Piriodicity(diff_s2)
-
+       
             diff_s1=diff_s1*diff_s1
             diff_s2=diff_s2*diff_s2
 
             NM=((diff_s1/sigma1)+(diff_s2/sigma2))*0.5d0
-
+ 
            fes1(i_s2)=fes1(i_s2)-ht*DEXP(-NM)
 
            num=num+DEXP(-fes1(i_s2)/kbT)
@@ -464,13 +459,13 @@ END DO
 !       if(periodic)  diff_s1=Apply_Piriodicity(diff_s1)
 !       if(periodic)  diff_s2=Apply_Piriodicity(diff_s2)
 !       if(periodic)  diff_s3=Apply_Piriodicity(diff_s3)
-
+       
             diff_s1=diff_s1*diff_s1
             diff_s2=diff_s2*diff_s2
             diff_s3=diff_s3*diff_s3
 
             NM=((diff_s1/sigma1)+(diff_s2/sigma2)+(diff_s3/sigma3))*0.5d0
-
+ 
            fes1(i_s2)=fes1(i_s2)-ht*DEXP(-NM)
 
            num=num+DEXP(-fes1(i_s2)/kbT)
@@ -482,7 +477,7 @@ END DO
       WRITE(*,*) "MTD Dimension >3 has not implimented. "
       WRITE(*,*) "Change MTD_DIMENSION to <= 3"
       STOP
-END SELECT
+END SELECT 
 !>>>>>>>>> ENDS CASE SELECT <<<<<<<<<<!
         ct(i_mtd)=kbT*DLOG(num/den)
     END DO

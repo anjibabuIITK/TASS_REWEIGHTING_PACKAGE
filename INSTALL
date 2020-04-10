@@ -1,0 +1,19 @@
+#!/bin/bash
+#----------------------------------------------------------------------!
+# INSTALL file to compile the code from source directory               !
+# 		Written By :- Rahul Verma			       !
+#----------------------------------------------------------------------!
+# /usr/bin/make -C $MAKE_PATH/MODULE
+#Type ...
+#./INSTALL           ! to create executable locally
+#./INSTALL all       ! to install in specicifc location 
+#./INSTALL clean     ! clean executables
+#./INSTALL distclean ! remove all object files and executable
+#./INSTALL tar       ! create tar file
+#----------------------------------------------------------------------!
+#
+export MAKE_PATH=`pwd`
+
+#echo $@ #
+
+/usr/bin/make $1 -C $MAKE_PATH/MODULE
