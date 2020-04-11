@@ -5,13 +5,13 @@ Written module for reading plumed input and user defined input files.
 Writtem module for counting no. od steps and no. of columns for a given file.
 Module for reweighting MTD for 1D, 2D, 3D
 Module for calculating probability (1D, 2D, 3D, 4D)
-
+Need to rewrite configuration file to generate makefile
+MODULE for PERIODICITY 
 
 
 Yet to Do:
-MODULE for PERIODICITY 
+
 Module for running WHAM (1D, 2D, 3D, 4D)
-Need to rewrite configuration file to generate makefile
 Need to write user manual (Dr. Tripathi)
 Tutorial
 
